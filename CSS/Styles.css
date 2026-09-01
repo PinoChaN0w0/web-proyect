@@ -741,3 +741,266 @@ body {
 main {
     flex-grow: 1;
 }
+
+/* ==========================================================================
+   1. VARIABLES GLOBALES Y CONFIGURACIÓN BASE
+   ========================================================================== */
+:root {
+    --bg-black: #000000;
+    --bg-dark-card: #121212;
+    --bg-input: #1a1a1a;
+    --primary-blue: #1E90FF;
+    --neon-green: #39FF14;
+    --text-white: #FFFFFF;
+    --text-muted: #A0A0A0;
+    --font-orbitron: 'Orbitron', sans-serif;
+    --font-roboto: 'Roboto', sans-serif;
+}
+
+/* Configuración Flexbox para mantener el footer al final de la pantalla */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-black);
+    color: var(--text-white);
+    font-family: var(--font-roboto);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* El contenido principal toma el espacio sobrante */
+main {
+    flex: 1 0 auto;
+}
+
+/* ==========================================================================
+   2. ENCABEZADO Y NAVEGACIÓN (HEADER)
+   ========================================================================== */
+.header {
+    background-color: rgba(0, 0, 0, 0.9);
+    border-bottom: 2px solid var(--primary-blue);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-white);
+}
+
+.logo-icon {
+    font-size: 2rem;
+}
+
+.logo h1 {
+    font-family: var(--font-orbitron);
+    font-size: 1.5rem;
+    margin: 0;
+    color: var(--primary-blue);
+    line-height: 1;
+}
+
+.logo span {
+    font-size: 0.8rem;
+    color: var(--neon-green);
+    letter-spacing: 2px;
+}
+
+.navbar {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar a {
+    color: var(--text-white);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar a:hover, 
+.navbar a.active {
+    color: var(--neon-green);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.login-button {
+    color: var(--text-white);
+    text-decoration: none;
+    padding: 6px 15px;
+    border: 1px solid var(--primary-blue);
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.login-button:hover,
+.login-button.active {
+    background-color: var(--primary-blue);
+    color: var(--bg-black);
+    font-weight: bold;
+}
+
+.cart-button {
+    color: var(--neon-green);
+    font-size: 1.2rem;
+    position: relative;
+    text-decoration: none;
+}
+
+#cart-count {
+    background-color: var(--primary-blue);
+    color: var(--text-white);
+    font-size: 0.75rem;
+    border-radius: 50%;
+    padding: 2px 6px;
+    position: absolute;
+    top: -8px;
+    right: -10px;
+}
+
+/* ==========================================================================
+   3. ESTILOS DE FORMULARIO Y TARJETAS (LOGIN Y REGISTRO)
+   ========================================================================== */
+.card {
+    background-color: var(--bg-dark-card) !important;
+    border: 1px solid var(--primary-blue) !important;
+    box-shadow: 0 0 15px rgba(30, 144, 255, 0.2);
+    border-radius: 10px;
+}
+
+.form-label {
+    color: var(--text-white);
+    font-weight: 500;
+}
+
+.form-control {
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--primary-blue) !important;
+    color: var(--text-white) !important;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 8px var(--primary-blue);
+    border-color: var(--neon-green) !important;
+}
+
+/* Botón Neón Gamer */
+.btn-neon {
+    background-color: var(--neon-green);
+    color: var(--bg-black);
+    font-family: var(--font-orbitron);
+    font-weight: bold;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-neon:hover {
+    background-color: #2ee010;
+    box-shadow: 0 0 15px var(--neon-green);
+    color: var(--bg-black);
+}
+
+/* Mensajes dinámicos de JS */
+#mensajeError {
+    min-height: 24px;
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   4. PIE DE PÁGINA (FOOTER)
+   ========================================================================== */
+.footer {
+    background-color: #080808;
+    border-top: 1px solid #222;
+    padding: 40px 0 20px 0;
+    margin-top: auto; /* Empuja el footer hacia abajo */
+    flex-shrink: 0;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.footer-brand h2 {
+    font-family: var(--font-orbitron);
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+}
+
+.footer-brand p {
+    color: var(--text-muted);
+}
+
+.footer-section h3 {
+    font-family: var(--font-orbitron);
+    color: var(--neon-green);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.footer-section a {
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: var(--text-white);
+}
+
+.footer-section p {
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid #1a1a1a;
+    margin-top: 30px;
+    padding-top: 20px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   5. MEDIA QUERIES (RESPONSIVE)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
