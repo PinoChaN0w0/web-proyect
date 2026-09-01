@@ -730,3 +730,14 @@ a {
 
   }
 }
+/* Convierte el body en un contenedor flexible del tamaño de la pantalla */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Hace que el contenido principal crezca para llenar el espacio vacío */
+main {
+    flex-grow: 1;
+}
