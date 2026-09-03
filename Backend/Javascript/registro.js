@@ -1,72 +1,86 @@
-document.addEventListener("DOMContentLoaded", function() {
-    
+document.addEventListener("DOMContentLoaded", () => {
     const formRegistro = document.getElementById("formRegistro");
-        if (formRegistro) {
-        const nombreInput = document.getElementById("nombre");
-        const fechaNacimientoInput = document.getElementById("fechaNacimiento");
-        const emailInput = document.getElementById("email");
-        const passwordInput = document.getElementById("password");
-        const confirmarPasswordInput = document.getElementById("confirmarPassword");
-        const mensajeError = document.getElementById("mensajeError");
+    if (!formRegistro) return;
 
-        formRegistro.addEventListener("submit", function(evento) {
-            
-            // 1. Evitar que la página se recargue
-            evento.preventDefault(); 
-            
-            // Limpiamos mensajes
-            mensajeError.textContent = "";
-            mensajeError.style.color = "#FF0000"; 
+    // Referencias centralizadas del DOM
+    const elementos = {
+        nombre: document.getElementById("nombre"),
+        fechaNacimiento: document.getElementById("fechaNacimiento"),
+        email: document.getElementById("email"),
+        password: document.getElementById("password"),
+        confirmarPassword: document.getElementById("confirmarPassword"),
+        mensajeError: document.getElementById("mensajeError")
+    };
 
-            const nombre = nombreInput.value.trim();
-            const fechaNacimiento = fechaNacimientoInput.value;
-            const email = emailInput.value.trim();
-            const password = passwordInput.value.trim();
-            const confirmarPassword = confirmarPasswordInput.value.trim();
+    // Funciones Auxiliares
+    const mostrarMensaje = (texto, esExito = false) => {
+        elementos.mensajeError.textContent = texto;
+        elementos.mensajeError.style.color = esExito 
+            ? "var(--neon-green, #39FF14)" 
+            : "#ff4d4d";
+    };
 
-            if (nombre === "" || fechaNacimiento === "" || email === "" || password === "" || confirmarPassword === "") {
-                mensajeError.textContent = "Error: Todos los campos son obligatorios.";
-                return;
-            }
+    const esMayorDeEdad = (fechaNacimientoStr) => {
+        const fechaNac = new Date(fechaNacimientoStr);
+        const hoy = new Date();
+        let edad = hoy.getFullYear() - fechaNac.getFullYear();
+        const mes = hoy.getMonth() - fechaNac.getMonth();
 
-            const fechaNac = new Date(fechaNacimiento);
-            const hoy = new Date();
-            let edad = hoy.getFullYear() - fechaNac.getFullYear();
-            const mes = hoy.getMonth() - fechaNac.getMonth();
-            
-            if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
-                edad--;
-            }
+        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+            edad--;
+        }
+        return edad >= 18;
+    };
 
-            if (edad < 18) {
-                mensajeError.textContent = "Error: Según las reglas de Level-Up, debes ser mayor de 18 años para registrarte.";
-                return; 
-            }
+    const esEmailValido = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-            const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!regexCorreo.test(email)) {
-                mensajeError.textContent = "Error: Ingresa un formato de correo válido.";
-                return;
-            }
+    // Event Listener Principal
+    formRegistro.addEventListener("submit", (evento) => {
+        evento.preventDefault();
 
-            if (password !== confirmarPassword) {
-                mensajeError.textContent = "Error: Las contraseñas no coinciden.";
-                return;
-            }
+        const datos = {
+            nombre: elementos.nombre.value.trim(),
+            fechaNacimiento: elementos.fechaNacimiento.value,
+            email: elementos.email.value.trim(),
+            password: elementos.password.value,
+            confirmarPassword: elementos.confirmarPassword.value
+        };
 
-            if (password.length < 6) {
-                mensajeError.textContent = "Error: La contraseña debe tener al menos 6 caracteres.";
-                return;
-            }
+        // 1. Campos obligatorios
+        if (Object.values(datos).some(valor => !valor)) {
+            mostrarMensaje("Error: Todos los campos son obligatorios.");
+            return;
+        }
 
-            mensajeError.style.color = "#39FF14"; // Verde Neón
-            mensajeError.textContent = "¡Registro exitoso! Redirigiendo al inicio de sesión...";
+        // 2. Control de edad (R.1)
+        if (!esMayorDeEdad(datos.fechaNacimiento)) {
+            mostrarMensaje("Error: Debes ser mayor de 18 años para registrarte en Level-Up.");
+            return;
+        }
 
-            localStorage.setItem("nuevoUsuario", email);
+        // 3. Formato de correo (R.2)
+        if (!esEmailValido(datos.email)) {
+            mostrarMensaje("Error: Ingresa un formato de correo electrónico válido.");
+            return;
+        }
 
-            setTimeout(() => {
-                window.location.href = "login.html"; 
-            }, 2000);
-        });
-    }
+        // 4. Seguridad de contraseña
+        if (datos.password.length < 6) {
+            mostrarMensaje("Error: La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
+
+        if (datos.password !== datos.confirmarPassword) {
+            mostrarMensaje("Error: Las contraseñas no coinciden.");
+            return;
+        }
+
+        // 5. Registro exitoso y persistencia
+        mostrarMensaje("¡Registro exitoso! Redirigiendo al inicio de sesión...", true);
+        localStorage.setItem("nuevoUsuario", datos.email);
+
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 2000);
+    });
 });

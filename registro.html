@@ -2,89 +2,118 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=
-    , initial-scale=1.0">
-    <title>Inicio de Sesión</title>
-    	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-	<link rel="stylesheet" href="CSS/Styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta | Level-Up Gamer</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="CSS/Styles.css">
 </head>
-<<header class="header">
-    <div class="container header-container">
-        <!-- LOGO -->
-        <a href="index.html" class="logo">
-            <span class="logo-icon">🎮</span>
-            <div>
-                <h1>LEVEL-UP</h1>
-                <span>GAMER</span>
-            </div>
-        </a>
-        <nav class="navbar">
-            <a href="index.html">Inicio</a>
-            <a href="productos.html" class="active">Productos</a>
-            <a href="nosotros.html">Nosotros</a>
-            <a href="blogs.html">Blogs</a>
-            <a href="contacto.html">Contacto</a>      
-        </nav>
-        <div class="header-actions">
-            <a href="login.html" class="login-button">
-                <i class="fa-solid fa-user"></i>Iniciar sesión</a>
-            <a href="carrito.html" class="cart-button">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span id="cart-count">0</span>
-            </a>
-        </div>
-    </div>
-</header>
+<body>
 
-<main class="container my-5">
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🎮</span>
+                <div>
+                    <h1>LEVEL-UP</h1>
+                    <span>GAMER</span>
+                </div>
+            </a>
+            <nav class="navbar">
+                <a href="index.html">Inicio</a>
+                <a href="productos.html">Productos</a>
+                <a href="nosotros.html">Nosotros</a>
+                <a href="blogs.html">Blogs</a>
+                <a href="contacto.html">Contacto</a>      
+            </nav>
+            <div class="header-actions">
+                <a href="login.html" class="login-button">
+                    <i class="fa-solid fa-user"></i> Iniciar sesión
+                </a>
+                <a href="carrito.html" class="cart-button">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container my-5">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
                 <div class="card p-4 p-md-5">
                     
-                    <h2 class="text-center mb-2" style="font-family: var(--font-orbitron); color: var(--primary-blue);">
+                    <h2 class="text-center mb-1" style="font-family: var(--font-orbitron); color: var(--primary-blue);">
                         CREAR CUENTA
                     </h2>
                     <p class="text-center mb-4" style="color: var(--text-muted); font-size: 0.9rem;">
                         Únete a la comunidad de Level-Up Gamer
                     </p>
                     
-                    <!-- Formulario con ID conectado a registro.js -->
+                    <!-- Formulario conectado a registro.js -->
                     <form id="formRegistro">
                         
+                        <!-- Gamer Tag -->
                         <div class="mb-3">
-                            <label for="nombre" class="form-label">Gamer Tag o Nombre Completo</label>
+                            <label for="nombre" class="form-label">
+                                <i class="fa-solid fa-gamepad me-1" style="color: var(--primary-blue);"></i> Gamer Tag o Nombre
+                            </label>
                             <input type="text" class="form-control" id="nombre" placeholder="Ej: ShadowGamer99" required>
                         </div>
 
+                        // Correo Electrónico??
                         <div class="mb-3">
-                            <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento (Debes ser mayor de 18 años)</label>
-                            <input type="date" class="form-control" id="fechaNacimiento" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <label for="email" class="form-label">
+                                <i class="fa-solid fa-envelope me-1" style="color: var(--primary-blue);"></i> Correo Electrónico
+                            </label>
                             <input type="email" class="form-control" id="email" placeholder="ejemplo@duocuc.cl" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="password" placeholder="Mínimo 6 caracteres" required>
+                            <div class="form-text mt-1" style="color: var(--text-muted); font-size: 0.8rem;">
+                                Usa tu correo @duocuc.cl para activar un 20% de descuento.
+                            </div>
                         </div>
 
+                       // Fecha de Nacimiento Aun sigue sin gustarme esta wea
                         <div class="mb-3">
-                            <label for="confirmarPassword" class="form-label">Confirmar Contraseña</label>
-                            <input type="password" class="form-control" id="confirmarPassword" placeholder="Repite tu contraseña" required>
+                            <label for="fechaNacimiento" class="form-label">
+                                <i class="fa-solid fa-calendar-days me-1" style="color: var(--primary-blue);"></i> Fecha de Nacimiento
+                            </label>
+                            <input type="date" class="form-control" id="fechaNacimiento" style="color-scheme: dark;" required>
+                            <div class="form-text mt-1" style="color: var(--text-muted); font-size: 0.8rem;">
+                                Debes ser mayor de 18 años para registrarte.
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">
+                                    <i class="fa-solid fa-lock me-1" style="color: var(--primary-blue);"></i> Contraseña
+                                </label>
+                                <input type="password" class="form-control" id="password" placeholder="Mínimo 6 caracteres" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirmarPassword" class="form-label">
+                                    <i class="fa-solid fa-shield-halved me-1" style="color: var(--primary-blue);"></i> Confirmar
+                                </label>
+                                <input type="password" class="form-control" id="confirmarPassword" placeholder="Repite contraseña" required>
+                            </div>
                         </div>
 
                         <div class="mb-4">
-                            <label for="codigoReferido" class="form-label" style="color: var(--text-muted);">Código de Referido (Opcional)</label>
+                            <label for="codigoReferido" class="form-label" style="color: var(--text-muted);">
+                                <i class="fa-solid fa-ticket me-1"></i> Código de Referido (Opcional)
+                            </label>
                             <input type="text" class="form-control" id="codigoReferido" placeholder="Ej: GAMER2026">
                         </div>
                         
-                        <p id="mensajeError" class="text-center fw-bold"></p>
+                        <p id="mensajeError" class="text-center fw-bold mb-3"></p>
                         
-                        <div class="d-grid gap-2 mt-4">
+                        <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-neon py-2">
                                 REGISTRARME
                             </button>
@@ -102,37 +131,39 @@
         </div>
     </main>
 
-<footer class="footer">
-    <div class="footer-container">
-        <div class="footer-brand">
-            <h2>LEVEL-UP</h2>
-            <p>Tu tienda gamer de confianza.</p>
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h2>LEVEL-UP</h2>
+                <p>Tu tienda gamer de confianza.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Navegación</h3>
+                <a href="index.html">Inicio</a>
+                <a href="productos.html">Productos</a>
+                <a href="nosotros.html">Nosotros</a>
+                <a href="blogs.html">Blogs</a>
+            </div>
+            <div class="footer-section">
+                <h3>Ayuda</h3>
+                <a href="contacto.html">Contacto</a>
+                <a href="#">Despachos</a>
+                <a href="#">Términos y condiciones</a>    
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p><i class="fa-solid fa-phone"></i> +56 9 6650 5847</p>
+                <p><i class="fa-solid fa-envelope"></i> contacto@levelup.cl</p>
+            </div>
         </div>
-        <div class="footer-section">
-            <h3>Navegación</h3>
-            <a href="index.html">Inicio</a>
-            <a href="productos.html">Productos</a>
-            <a href="nosotros.html">Nosotros</a>
-            <a href="blogs.html">Blogs</a>
+        <div class="footer-bottom">
+            <p>© 2026 Level-Up Gamer. Todos los derechos reservados.</p>      
         </div>
-        <div class="footer-section">
-            <h3>Ayuda</h3>
-            <a href="contacto.html">Contacto</a>
-            <a href="#"> Despachos</a>
-            <a href="#">Términos y condiciones</a>    
-        </div>
-        <div class="footer-section">
-            <h3>Contacto</h3>
-            <p>
-                <i class="fa-solid fa-phone"></i> +56 9 6650 5847</p>
-            <p>
-                <i class="fa-solid fa-envelope"></i>contacto@levelup.cl</p>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>© 2026 Level-Up Gamer.
-            Todos los derechos reservados.
-        </p>      
-    </div>
-</footer>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="Backend/Javascript/registro.js"></script>
+</body>
 </html>
