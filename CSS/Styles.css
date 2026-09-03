@@ -499,3 +499,8 @@ a {
   .hero h2, .products-header h2 { font-size: 32px; }
   .products-grid { grid-template-columns: 1fr; }
 }
+/* Hace visible el ícono del calendario en fondos oscuros */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}

@@ -2,124 +2,139 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=
-    , initial-scale=1.0">
-    <title>Inicio de Sesión</title>
-    	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-	<link rel="stylesheet" href="CSS/Styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión | Level-Up Gamer</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    
+    <!-- FontAwesome para los íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fuentes Orbitron y Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tu hoja de estilos -->
+    <link rel="stylesheet" href="CSS/Styles.css">
 </head>
-<<header class="header">
-    <div class="container header-container">
-        <!-- LOGO -->
-        <a href="index.html" class="logo">
-            <span class="logo-icon">🎮</span>
-            <div>
-                <h1>LEVEL-UP</h1>
-                <span>GAMER</span>
-            </div>
-        </a>
-        <nav class="navbar">
-            <a href="index.html">Inicio</a>
-            <a href="productos.html" class="active">Productos</a>
-            <a href="nosotros.html">Nosotros</a>
-            <a href="blogs.html">Blogs</a>
-            <a href="contacto.html">Contacto</a>      
-        </nav>
-        <div class="header-actions">
-            <a href="login.html" class="login-button">
-                <i class="fa-solid fa-user"></i>Iniciar sesión</a>
-            <a href="carrito.html" class="cart-button">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span id="cart-count">0</span>
-            </a>
-        </div>
-    </div>
-</header>
 <body>
+
+    <!-- ENCABEZADO (Restaurado a la normalidad sin colores en línea) -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🎮</span>
+                <div>
+                    <h1>LEVEL-UP</h1>
+                    <span>GAMER</span>
+                </div>
+            </a>
+            <nav class="navbar">
+                <a href="index.html">Inicio</a>
+                <a href="productos.html">Productos</a>
+                <a href="nosotros.html">Nosotros</a>
+                <a href="blogs.html">Blogs</a>
+                <a href="contacto.html">Contacto</a>      
+            </nav>
+            <div class="header-actions">
+                <a href="login.html" class="login-button">
+                    <i class="fa-solid fa-user"></i> Iniciar sesión
+                </a>
+                <a href="carrito.html" class="cart-button">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="container my-5">
         <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <!-- Tarjeta con bordes neón -->
-                <div class="card bg-dark text-white shadow-lg" style="border: 1px solid #1E90FF;">
-                    <div class="card-body p-5">
+            <div class="col-md-8 col-lg-5">
+                <!-- Estructura idéntica a registro.html para mantener consistencia -->
+                <div class="card p-4 p-md-5">
+                    
+                    <h2 class="text-center mb-2" style="font-family: var(--font-orbitron); color: var(--primary-blue);">
+                        INICIAR SESIÓN
+                    </h2>
+                    <p class="text-center mb-4" style="color: var(--text-muted); font-size: 0.9rem;">
+                        Bienvenido de vuelta a la arena
+                    </p>
+                    
+                    <!-- Inicio del formulario -->
+                    <form id="formLogin">
                         
-                        <h2 class="text-center mb-4" style="font-family: 'Orbitron', sans-serif; color: #1E90FF;">
-                            INICIAR SESIÓN
-                        </h2>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="email" placeholder="ejemplo@duocuc.cl" required>
+                            <div class="form-text mt-1" style="color: var(--text-muted); font-size: 0.8rem;">
+                                Usa @duocuc.cl para activar tu descuento
+                            </div>
+                        </div>
                         
-                        <!-- Inicio del formulario. El ID "formLogin" es el que llama el JS -->
-                        <form id="formLogin">
-                            
-                            <div class="mb-4">
-                                <label for="email" class="form-label">Correo Electrónico (Usa @duocuc.cl para descuento)</label>
-                                <!-- ID "email" conectado al JS -->
-                                <input type="email" class="form-control text-white" id="email" 
-                                    style="background-color: #222; border: 1px solid #1E90FF;" 
-                                    placeholder="ejemplo@duocuc.cl" required>
-                            </div>
-                            
-                            <div class="mb-4">
-                                <label for="password" class="form-label">Contraseña</label>
-                                <!-- ID "password" conectado al JS -->
-                                <input type="password" class="form-control text-white" id="password" 
-                                    style="background-color: #222; border: 1px solid #1E90FF;" 
-                                    placeholder="******" required>
-                            </div>
-                            
-                            <!-- Párrafo vacío donde el JS inyectará los mensajes de error o éxito -->
-                            <p id="mensajeError" class="text-center fw-bold"></p>
-                            
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn fw-bold text-dark" style="background-color: #39FF14; font-family: 'Orbitron', sans-serif;">
-                                    ENTRAR A LA ARENA
-                                </button>
-                            </div>
-                            
-                            <div class="mt-4 text-center">
-                                <p class="mb-0 text-light">¿No tienes cuenta? <a href="registro.html" style="color: #1E90FF; text-decoration: none; font-weight: bold;">Regístrate aquí</a></p>
-                            </div>
-                            
-                        </form>
-                    </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="password" placeholder="******" required>
+                        </div>
+                        
+                        <!-- Párrafo vacío donde el JS inyectará los mensajes de error -->
+                        <p id="mensajeError" class="text-center fw-bold"></p>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <!-- Usa la clase btn-neon que tienes en tu CSS -->
+                            <button type="submit" class="btn btn-neon py-2">
+                                ENTRAR A LA ARENA
+                            </button>
+                        </div>
+                        
+                        <div class="mt-4 text-center">
+                            <p class="mb-0 text-light">¿No tienes cuenta? 
+                                <a href="registro.html" style="color: var(--primary-blue); text-decoration: none; font-weight: bold;">Regístrate aquí</a>
+                            </p>
+                        </div>
+                        
+                    </form>
                 </div>
             </div>
         </div>
     </main>
     
-</body>
+    <!-- PIE DE PÁGINA -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h2>LEVEL-UP</h2>
+                <p>Tu tienda gamer de confianza.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Navegación</h3>
+                <a href="index.html">Inicio</a>
+                <a href="productos.html">Productos</a>
+                <a href="nosotros.html">Nosotros</a>
+                <a href="blogs.html">Blogs</a>
+            </div>
+            <div class="footer-section">
+                <h3>Ayuda</h3>
+                <a href="contacto.html">Contacto</a>
+                <a href="#">Despachos</a>
+                <a href="#">Términos y condiciones</a>    
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p><i class="fa-solid fa-phone"></i> +56 9 6650 5847</p>
+                <p><i class="fa-solid fa-envelope"></i> contacto@levelup.cl</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Level-Up Gamer. Todos los derechos reservados.</p>      
+        </div>
+    </footer>
 
-<footer class="footer">
-    <div class="footer-container">
-        <div class="footer-brand">
-            <h2>LEVEL-UP</h2>
-            <p>Tu tienda gamer de confianza.</p>
-        </div>
-        <div class="footer-section">
-            <h3>Navegación</h3>
-            <a href="index.html">Inicio</a>
-            <a href="productos.html">Productos</a>
-            <a href="nosotros.html">Nosotros</a>
-            <a href="blogs.html">Blogs</a>
-        </div>
-        <div class="footer-section">
-            <h3>Ayuda</h3>
-            <a href="contacto.html">Contacto</a>
-            <a href="#"> Despachos</a>
-            <a href="#">Términos y condiciones</a>    
-        </div>
-        <div class="footer-section">
-            <h3>Contacto</h3>
-            <p>
-                <i class="fa-solid fa-phone"></i> +56 9 6650 5847</p>
-            <p>
-                <i class="fa-solid fa-envelope"></i>contacto@levelup.cl</p>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>© 2026 Level-Up Gamer.
-            Todos los derechos reservados.
-        </p>      
-    </div>
-</footer>
+    <!-- Bootstrap JS y Script de Login -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="Backend/Javascript/login.js"></script>
+</body>
 </html>
