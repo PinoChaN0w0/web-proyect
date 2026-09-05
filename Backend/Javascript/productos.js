@@ -2,7 +2,6 @@
 
 const productos = [
     {
-        id: 1,
         nombre: "Catan",
         categoria: "Juegos de mesa",
         precio: 29990,
@@ -10,7 +9,6 @@ const productos = [
         descripcion: "Juego de estrategia y aventura para disfrutar con amigos."
     },
     {
-        id: 2,
         nombre: "Carcassonne",
         categoria: "Juegos de mesa",
         precio: 24990,
@@ -18,7 +16,6 @@ const productos = [
         descripcion: "Juego de mesa de estrategia basado en la construcción de territorios."
     },
     {
-        id: 3,
         nombre: "Controlador Xbox",
         categoria: "Accesorios",
         precio: 59990,
@@ -26,7 +23,6 @@ const productos = [
         descripcion: "Controlador para disfrutar tus juegos favoritos con comodidad."
     },
     {
-        id: 4,
         nombre: "HyperX Cloud II",
         categoria: "Accesorios",
         precio: 79990,
@@ -34,7 +30,6 @@ const productos = [
         descripcion: "Audífonos gamer con sonido envolvente y micrófono integrado."
     },
     {
-        id: 5,
         nombre: "PlayStation 5",
         categoria: "Consolas",
         precio: 549990,
@@ -42,7 +37,6 @@ const productos = [
         descripcion: "Consola de nueva generación para disfrutar tus juegos favoritos."
     },
     {
-        id: 6,
         nombre: "Notebook Gamer ASUS ROG",
         categoria: "Computadores Gamers",
         precio: 1299990,
@@ -50,7 +44,6 @@ const productos = [
         descripcion: "Computador gamer de alto rendimiento para videojuegos."
     },
     {
-        id: 7,
         nombre: "Silla Secretlab Titan",
         categoria: "Sillas Gamers",
         precio: 349990,
@@ -58,7 +51,6 @@ const productos = [
         descripcion: "Silla gamer diseñada para entregar comodidad durante largas sesiones."
     },
     {
-        id: 8,
         nombre: "Logitech G502 HERO",
         categoria: "Mouse",
         precio: 49990,
@@ -66,7 +58,6 @@ const productos = [
         descripcion: "Mouse gamer de alta precisión para tus partidas."
     },
     {
-        id: 9,
         nombre: "Razer Goliathus",
         categoria: "Mousepad",
         precio: 29990,
@@ -74,7 +65,6 @@ const productos = [
         descripcion: "Mousepad gamer diseñado para ofrecer precisión y control."
     },
     {
-        id: 10,
         nombre: "Poleron Gamer",
         categoria: "Ropa",
         precio: 14990,
@@ -128,13 +118,13 @@ function mostrarProductos(listaProductos) {
                 </p>
                 <div class="product-actions">
                     <a
-                        href="producto-detalle.html?id=${producto.id}"
+                        href="#"
                         class="product-button">
                         Ver producto
                     </a>
                     <button
                         class="add-cart-button"
-                        onclick="agregarAlCarrito(${producto.id})">
+                        onclick="agregarAlCarrito('${producto.nombre}')">
 
                         <i class="fa-solid fa-cart-plus"></i>
                         Agregar
@@ -177,48 +167,69 @@ function filtrarProductos() {
 
 
 
-function agregarAlCarrito(idProducto) {
+function agregarAlCarrito(nombreProducto) {
+
     const producto =
         productos.find(
-            producto => producto.id === idProducto
+            producto => producto.nombre === nombreProducto
         );
+
 
     if (!producto) {
         return;
-
     }
+
 
     let carrito =
         JSON.parse(
             localStorage.getItem("carrito")
         ) || [];
 
+
     const productoExistente =
         carrito.find(
-            item => item.id === idProducto
+            item => item.nombre === nombreProducto
         );
 
+
     if (productoExistente) {
+
         productoExistente.cantidad++;
+
     } else {
+
         carrito.push({
-            id: producto.id,
+
             nombre: producto.nombre,
+
+            categoria: producto.categoria,
+
             precio: producto.precio,
+
             emoji: producto.emoji,
+
+            descripcion: producto.descripcion,
+
             cantidad: 1
+
         });
+
     }
+
 
     localStorage.setItem(
         "carrito",
         JSON.stringify(carrito)
     );
 
+
     actualizarContadorCarrito();
+
+
     alert(
         `${producto.nombre} fue agregado al carrito.`
     );
+
 }
 
 function actualizarContadorCarrito() {
