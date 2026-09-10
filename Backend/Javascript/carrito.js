@@ -1,120 +1,123 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const contenedorCarro = document.querySelector('.container-carro');
+    const cartItemsContainer = document.getElementById('cart-items');
+    const emptyCartMsg = document.getElementById('empty-cart-msg');
+    const tableContainer = document.querySelector('.table-responsive');
     const cartCount = document.getElementById('cart-count');
+    const subtotalVal = document.getElementById('subtotal-val');
+    const totalVal = document.getElementById('total-val');
+    const btnVaciar = document.getElementById('btn-vaciar');
 
-    if (!contenedorCarro) return;
+    if (!cartItemsContainer) return;
 
-    // 1. Obtener carrito desde localStorage
     let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-    // Si el carrito no tiene productos, mostramos un producto de ejemplo (Catan) de tu lista
-    if (carrito.length === 0) {
-        carrito = [{
-            id: 1,
-            nombre: "Catan",
-            categoria: "Juegos de mesa",
-            precio: 29990,
-            emoji: "🎲",
-            descripcion: "Juego de estrategia y aventura para disfrutar con amigos.",
-            cantidad: 1
-        }];
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-    }
+    function renderCarrito() {
+        const totalItems = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+        if (cartCount) cartCount.textContent = totalItems;
 
-    // Tomamos SOLO el 1er producto para mantener la vista con un solo ítem
-    let producto = carrito[0];
-
-    // 2. Renderizar la interfaz utilizando tus emojis e información real
-    contenedorCarro.innerHTML = `
-        <div class="container my-5">
-            <div class="row g-4">
-                <!-- Tarjeta del Producto -->
-                <div class="col-md-8">
-                    <div class="card p-3" style="background-color: var(--bg-dark-card, #121212); border: 1px solid var(--primary-blue, #1E90FF);">
-                        <div class="row g-0 align-items-center">
-                            <div class="col-md-4 text-center p-2">
-                                <span style="font-size: 80px;">${producto.emoji || '🎮'}</span>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <span class="product-category" style="color: var(--neon-green, #39FF14); font-size: 11px; letter-spacing: 2px;">
-                                        ${producto.categoria || 'PRODUCTO GAMER'}
-                                    </span>
-                                    <h5 class="card-title fw-bold text-white fs-4 mt-1">${producto.nombre}</h5>
-                                    <p class="card-text text-muted">${producto.descripcion || ''}</p>
-                                    <p class="card-text fw-bold fs-4" style="color: var(--neon-green, #39FF14);">$${producto.precio.toLocaleString('es-CL')} CLP</p>
-                                    
-                                    <div class="d-flex align-items-center gap-3 mt-3">
-                                        <button id="btn-restar" class="btn btn-outline-danger btn-sm px-3">-</button>
-                                        <span id="cantidad-producto" class="fw-bold fs-5 text-white">${producto.cantidad}</span>
-                                        <button id="btn-sumar" class="btn btn-outline-info btn-sm px-3">+</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Resumen de Compra -->
-                <div class="col-md-4">
-                    <div class="card p-4" style="background-color: var(--bg-dark-card, #121212); border: 1px solid var(--primary-blue, #1E90FF);">
-                        <h4 class="card-title pb-2 border-bottom border-secondary text-white">Resumen de Compra</h4>
-                        <div class="d-flex justify-content-between my-3 text-white">
-                            <span>Cantidad:</span>
-                            <strong id="resumen-cantidad">${producto.cantidad}</strong>
-                        </div>
-                        <div class="d-flex justify-content-between my-3 text-white fs-5">
-                            <span>Total:</span>
-                            <strong id="resumen-total" style="color: var(--neon-green, #39FF14);">$${(producto.cantidad * producto.precio).toLocaleString('es-CL')} CLP</strong>
-                        </div>
-                        <button id="btn-comprar" class="btn w-100 mt-3 btn-neon" ${producto.cantidad === 0 ? 'disabled' : ''}>Proceder al Pago</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    // 3. Referencias del DOM
-    const btnSumar = document.getElementById('btn-sumar');
-    const btnRestar = document.getElementById('btn-restar');
-    const btnComprar = document.getElementById('btn-comprar');
-    const cantidadProducto = document.getElementById('cantidad-producto');
-    const resumenCantidad = document.getElementById('resumen-cantidad');
-    const resumenTotal = document.getElementById('resumen-total');
-
-    // 4. Actualización en tiempo real y sincronización con localStorage
-    function actualizarCarrito() {
-        // Actualizar datos en memoria y localStorage
-        carrito[0].cantidad = producto.cantidad;
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-
-        // Actualizar contador del Header y tarjeta
-        if (cartCount) cartCount.textContent = producto.cantidad;
-        cantidadProducto.textContent = producto.cantidad;
-        resumenCantidad.textContent = producto.cantidad;
-
-        // Calcular total
-        const total = producto.cantidad * producto.precio;
-        resumenTotal.textContent = `$${total.toLocaleString('es-CL')} CLP`;
-
-        // Estado de botones
-        btnRestar.disabled = producto.cantidad === 0;
-        btnComprar.disabled = producto.cantidad === 0;
-    }
-
-    // 5. Controles de sumar y restar
-    btnSumar.addEventListener('click', () => {
-        producto.cantidad++;
-        actualizarCarrito();
-    });
-
-    btnRestar.addEventListener('click', () => {
-        if (producto.cantidad > 0) {
-            producto.cantidad--;
-            actualizarCarrito();
+        if (carrito.length === 0) {
+            tableContainer.classList.add('d-none');
+            emptyCartMsg.classList.remove('d-none');
+            subtotalVal.textContent = '$0 CLP';
+            totalVal.textContent = '$0 CLP';
+            return;
         }
-    });
 
-    // Carga inicial
-    actualizarCarrito();
+        tableContainer.classList.remove('d-none');
+        emptyCartMsg.classList.add('d-none');
+        cartItemsContainer.innerHTML = '';
+        let subtotal = 0;
+
+        carrito.forEach((producto, index) => {
+            const subtotalProducto = producto.precio * producto.cantidad;
+            subtotal += subtotalProducto;
+
+            const fila = document.createElement('tr');
+            
+            // Se actualizó esta sección para mostrar la imagen con el contenedor adaptado
+            fila.innerHTML = `
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div style="width: 60px; height: 60px; margin-right: 15px; display: flex; justify-content: center; align-items: center; background-color: #fff; border-radius: 8px; overflow: hidden;">
+                            <img src="${producto.imagen || ''}" alt="${producto.nombre}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.onerror=null; this.outerHTML='<span style=\\'font-size: 2rem;\\'>${producto.emoji || '🎮'}</span>';">
+                        </div>
+                        <div>
+                            <h6 class="mb-0 text-white fw-bold">${producto.nombre}</h6>
+                            <small style="color: var(--neon-green, #39FF14);">${producto.categoria || 'Gamer'}</small>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-center text-light">$${producto.precio.toLocaleString('es-CL')}</td>
+                <td>
+                    <div class="d-flex justify-content-center align-items-center gap-2">
+                        <button class="btn btn-outline-danger btn-sm btn-restar" data-index="${index}">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <span class="text-white fw-bold px-2">${producto.cantidad}</span>
+                        <button class="btn btn-outline-info btn-sm btn-sumar" data-index="${index}">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </td>
+                <td class="text-end text-success fw-bold fs-6">$${subtotalProducto.toLocaleString('es-CL')}</td>
+                <td class="text-center">
+                    <button class="btn btn-link text-danger btn-eliminar p-0" data-index="${index}">
+                        <i class="fa-solid fa-trash-can fs-5"></i>
+                    </button>
+                </td>
+            `;
+            cartItemsContainer.appendChild(fila);
+        });
+
+        subtotalVal.textContent = `$${subtotal.toLocaleString('es-CL')} CLP`;
+        totalVal.textContent = `$${subtotal.toLocaleString('es-CL')} CLP`;
+
+        asignarEventosBotones();
+    }
+
+    function asignarEventosBotones() {
+        document.querySelectorAll('.btn-sumar').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const index = e.currentTarget.dataset.index;
+                carrito[index].cantidad++;
+                guardarYRenderizar();
+            });
+        });
+
+        document.querySelectorAll('.btn-restar').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const index = e.currentTarget.dataset.index;
+                if (carrito[index].cantidad > 1) {
+                    carrito[index].cantidad--;
+                } else {
+                    carrito.splice(index, 1);
+                }
+                guardarYRenderizar();
+            });
+        });
+
+        document.querySelectorAll('.btn-eliminar').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const index = e.currentTarget.dataset.index;
+                carrito.splice(index, 1);
+                guardarYRenderizar();
+            });
+        });
+    }
+
+    function guardarYRenderizar() {
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        renderCarrito();
+    }
+
+    if (btnVaciar) {
+        btnVaciar.addEventListener('click', () => {
+            if(confirm('¿Estás seguro de vaciar tu carrito?')) {
+                carrito = [];
+                guardarYRenderizar();
+            }
+        });
+    }
+
+    renderCarrito();
 });

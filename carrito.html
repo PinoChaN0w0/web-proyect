@@ -2,89 +2,186 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=
-    , initial-scale=1.0">
-    <title>Inicio de Sesión</title>
-    	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-	<link rel="stylesheet" href="CSS/Styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras | Level-Up Gamer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Hoja de estilos principal -->
+    <link rel="stylesheet" href="CSS/Styles.css">
 </head>
-<header class="header">
-    <div class="container header-container">
-        <a href="index.html" class="logo">
-            <span class="logo-icon">🎮</span>
-            <div>
-                <h1>LEVEL-UP</h1>
-                <span>GAMER</span>
-            </div>
-        </a>
-        <nav class="navbar">
-            <a href="index.html">Inicio</a>
-            <a href="productos.html" class="active">Productos</a>
-            <a href="nosotros.html">Nosotros</a>
-            <a href="blogs.html">Blogs</a>
-            <a href="contacto.html">Contacto</a>      
-        </nav>
-        <div class="header-actions">
-            <a href="login.html" class="login-button">
-                <i class="fa-solid fa-user"></i>Iniciar sesión</a>
-            <a href="carrito.html" class="cart-button">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span id="cart-count">0</span>
+<body>
+
+    <!-- ENCABEZADO --> 
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🎮</span>
+                <div>
+                    <h1>LEVEL-UP</h1>
+                    <span>GAMER</span>
+                </div>
             </a>
+            <nav class="navbar">
+                <a href="index.html">Inicio</a>
+                <a href="productos.html">Productos</a>
+                <a href="nosotros.html">Nosotros</a>
+                <a href="blogs.html">Blogs</a>
+                <a href="contacto.html">Contacto</a>      
+            </nav>
+            <div class="header-actions">
+                <a href="login.html" class="login-button">
+                    <i class="fa-solid fa-user"></i> Iniciar sesión
+                </a>
+                <a href="carrito.html" class="cart-button active">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
         </div>
-    </div>
-</header>>
+    </header>
 
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="container my-5">
+        <h2 class="mb-4 text-center text-md-start" style="font-family: var(--font-orbitron); color: var(--primary-blue, #1E90FF);">
+            <i class="fa-solid fa-cart-shopping me-2"></i> TU CARRITO DE COMPRAS
+        </h2>
 
-    <div class="container-carro">
+        <div class="row g-4">
+            <!-- COLUMNA IZQUIERDA: DETALLE DE PRODUCTOS -->
+            <div class="col-lg-8">
+                <div class="card p-3 p-md-4 shadow-sm">
+                    
+                    <!-- Tabla de productos -->
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle mb-0">
+                            <thead>
+                                <tr class="text-uppercase" style="font-family: var(--font-orbitron); border-bottom: 2px solid var(--primary-blue, #1E90FF);">
+                                    <th scope="col">Producto</th>
+                                    <th scope="col" class="text-center">Precio</th>
+                                    <th scope="col" class="text-center" style="width: 120px;">Cantidad</th>
+                                    <th scope="col" class="text-end">Subtotal</th>
+                                    <th scope="col" class="text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <!-- Contenedor dinámico manipulado por carrito.js -->
+                            <tbody id="cart-items">
+                                <!-- Ejemplo de fila renderizada dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
 
-        <img class="img-carro" src="" alt="">
+                    <!-- Mensaje para carrito vacío (manipulado mediante JS) -->
+                    <div id="empty-cart-msg" class="text-center py-5 d-none">
+                        <i class="fa-solid fa-cart-flatbed display-1 mb-3 text-muted"></i>
+                        <h4>Tu carrito está vacío</h4>
+                        <p class="text-muted mb-4">¿No sabes qué llevar? Explora nuestro catálogo de productos.</p>
+                        <a href="productos.html" class="btn btn-neon px-4 py-2">
+                            <i class="fa-solid fa-store me-2"></i>Ir a la Tienda
+                        </a>
+                    </div>
 
+                    <!-- Botones de Acción del Carrito -->
+                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
+                        <a href="productos.html" class="btn btn-outline-light btn-sm">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Seguir Comprando
+                        </a>
+                        <button id="btn-vaciar" class="btn btn-outline-danger btn-sm">
+                            <i class="fa-solid fa-trash-can me-1"></i> Vaciar Carrito
+                        </button>
+                    </div>
 
-    </div>
-	<footer class="footer">
-    <div class="footer-container">
-        <div class="footer-brand">
-            <h2>LEVEL-UP</h2>
-            <p>Tu tienda gamer de confianza.</p>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: RESUMEN DEL PEDIDO -->
+            <div class="col-lg-4">
+                <div class="card p-4 shadow-sm" style="border: 1px solid var(--primary-blue, #1E90FF);">
+                    <h4 class="mb-3" style="font-family: var(--font-orbitron); color: var(--primary-blue, #1E90FF);">
+                        RESUMEN DEL PEDIDO
+                    </h4>
+                    
+                    <hr class="border-secondary">
+
+                    <!-- Desglose de Totales -->
+                    <div class="d-flex justify-content-between mb-2 text-light">
+                        <span>Subtotal productos:</span>
+                        <span id="subtotal-val" class="fw-bold">$0 CLP</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        <span>Descuento (Convenio Duoc):</span>
+                        <span id="discount-val" class="fw-bold">-$0 CLP</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 text-light">
+                        <span>Envío:</span>
+                        <span class="text-info fw-bold">GRATIS</span>
+                    </div>
+
+                    <!-- Cupón de Descuento -->
+                    <div class="mb-3">
+                        <label for="coupon-code" class="form-label text-muted small">¿Tienes un cupón?</label>
+                        <div class="input-group">
+                            <input type="text" id="coupon-code" class="form-control" placeholder="Ej: DUOCUC">
+                            <button id="btn-coupon" class="btn btn-outline-info" type="button">Aplicar</button>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary">
+
+                    <!-- Total Final -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="h5 mb-0 fw-bold">TOTAL:</span>
+                        <span id="total-val" class="h4 mb-0 fw-bold text-success" style="font-family: var(--font-orbitron);">$0 CLP</span>
+                    </div>
+
+                    <!-- Botón de Pago -->
+                    <div class="d-grid">
+                        <button id="btn-checkout" class="btn btn-neon py-3 fs-6">
+                            PROCEDER AL PAGO <i class="fa-solid fa-credit-card ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="footer-section">
-            <h3>Navegación</h3>
-            <a href="index.html">Inicio</a>
-            <a href="productos.html">Productos</a>
-            <a href="nosotros.html">Nosotros</a>
-            <a href="blogs.html">Blogs</a>
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h2>LEVEL-UP</h2>
+                <p>Tu tienda gamer de confianza.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Navegación</h3>
+                <a href="index.html">Inicio</a>
+                <a href="productos.html">Productos</a>
+                <a href="nosotros.html">Nosotros</a>
+                <a href="blogs.html">Blogs</a>
+            </div>
+            <div class="footer-section">
+                <h3>Ayuda</h3>
+                <a href="contacto.html">Contacto</a>
+                <a href="#">Despachos</a>
+                <a href="#">Términos y condiciones</a>    
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p><i class="fa-solid fa-phone"></i> +56 9 6650 5847</p>
+                <p><i class="fa-solid fa-envelope"></i> contacto@levelup.cl</p>
+            </div>
         </div>
-        <div class="footer-section">
-            <h3>Ayuda</h3>
-            <a href="contacto.html">Contacto</a>
-            <a href="#"> Despachos</a>
-            <a href="#">Términos y condiciones</a>    
+        <div class="footer-bottom">
+            <p>© 2026 Level-Up Gamer. Todos los derechos reservados.</p>      
         </div>
-        <div class="footer-section">
-            <h3>Contacto</h3>
-            <p>
-                <i class="fa-solid fa-phone"></i> +56 9 6650 5847</p>
-            <p>
-                <i class="fa-solid fa-envelope"></i>contacto@levelup.cl</p>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>© 2026 Level-Up Gamer.
-            Todos los derechos reservados.
-        </p>      
-    </div>
-</footer>
-	<script src="https://code.jquery.com/jquery-3.6.4.min.js"
-		integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-		integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-		crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
-		integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD"
-		crossorigin="anonymous"></script>
-	<script src="Backend/Javascript/carrito.js"></script>
+    </footer>
+
+    <!-- Scripts de Bootstrap y Lógica del Carrito -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="Backend/Javascript/carrito.js"></script>
 </body>
-
-</html>	
+</html>
