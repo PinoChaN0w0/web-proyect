@@ -1,58 +1,118 @@
 // Esperamos a que todo el cod se cargue para ejecutar el script
-document.addEventListener("DOMContentLoaded", function() {
-    // esta weea es el formulario con todas las weas
-    const formLogin = document.getElementById("formLogin");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const mensajeError = document.getElementById("mensajeError");
+document.addEventListener("DOMContentLoaded", () => {
+    const formLogin =
+        document.getElementById("formLogin");
+    const emailInput =
+        document.getElementById("email");
+    const passwordInput =
+        document.getElementById("password");
+    const mensajeError =
+        document.getElementById("mensajeError");
 
-    formLogin.addEventListener("submit", function(evento) {
+    // INICIAR SESIÓN
 
-        evento.preventDefault(); 
-        
-        // Limpiamos mensajes anteriores
+    formLogin.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+
+        // OBTENER DATOS DEL FORMULARIO
+
+        const email =
+            emailInput.value.trim().toLowerCase();
+        const password =
+            passwordInput.value.trim();
+
+        // LIMPIAR MENSAJE ANTERIOR
+
         mensajeError.textContent = "";
-        mensajeError.style.color = "#FF0000"; // ROJO COMO EL FUEGO DE LA PASIÓN (O DE MI NOTAS)
-        const email = emailInput.value.trim();
-        const password = passwordInput.value.trim();
+        mensajeError.style.color = "#ff4d4d";
 
-        // Validacion 
+        // VALIDAR CAMPOS VACÍOS
+
         if (email === "" || password === "") {
-            mensajeError.textContent = "Error: Todos los campos son obligatorios.";
-            return; // Detiene la ejecución
-        }
 
-        // 3. Validación de formato de correo usando Expresiones Regulares
-        const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!regexCorreo.test(email)) {
-            mensajeError.textContent = "Error: Ingresa un formato de correo válido.";
+            mensajeError.textContent =
+                "Error: Todos los campos son obligatorios.";
+
             return;
         }
 
-        // Validación de longitud de contraseña
-        if (password.length < 6) {
-            mensajeError.textContent = "Error: La contraseña debe tener al menos 6 caracteres.";
+        // OBTENER USUARIOS DEL LOCAL STORAGE
+
+        const usuarios =
+            JSON.parse(
+                localStorage.getItem("usuarios")
+            ) || [];
+
+        // BUSCAR USUARIO
+
+        const usuarioEncontrado =
+            usuarios.find(
+                usuario =>
+                    usuario.email === email &&
+                    usuario.password === password
+            );
+
+        // COMPROBAR USUARIO
+
+        if (!usuarioEncontrado) {
+
+            mensajeError.textContent =
+                "Error: Correo o contraseña incorrectos.";
+
             return;
         }
 
-        // Simulación de Login Exitoso AUN NO TENGO SERVIDOR O CONECTADO A ALGUNA COSA, MATAME DIOS
-        mensajeError.style.color = "#39FF14"; // Verde Neón (Color de la marca Level-Up)
-        mensajeError.textContent = "¡Inicio de sesión exitoso! Redirigiendo...";
+        // LOGIN EXITOSO
 
-        // Local stogare?, dio te  oiga mi rey
-        localStorage.setItem("usuarioLogueado", "true");
-        localStorage.setItem("correoUsuario", email);
+        mensajeError.style.color = "#39FF14";
+        mensajeError.textContent =
+            "¡Inicio de sesión exitoso! Redirigiendo...";
 
-        // Si el correo termina con @duocuc.cl o @duoc.cl, activamos el descuento, yo creo que entrarian mas judios al duoc si les damos descuento, pero bueno, no soy el dueño de la tienda
-        if (email.endsWith("@duocuc.cl") || email.endsWith("@duoc.cl")) {
-            localStorage.setItem("descuentoActivo", "true");
+        // GUARDAR SESIÓN
+
+        localStorage.setItem(
+            "usuarioLogueado",
+            "true"
+        );
+
+        // GUARDAR USUARIO ACTUAL
+
+        localStorage.setItem(
+            "usuarioActual",
+            JSON.stringify({
+                nombre: usuarioEncontrado.nombre,
+                email: usuarioEncontrado.email
+            })
+        );
+
+        // GUARDAR CORREO
+
+        localStorage.setItem(
+            "correoUsuario",
+            email
+        );
+
+        // DESCUENTO DUOC
+
+        if (
+            email.endsWith("@duocuc.cl") ||
+            email.endsWith("@duoc.cl")
+        ) {
+            localStorage.setItem(
+                "descuentoActivo",
+                "true"
+            );
         } else {
-            localStorage.setItem("descuentoActivo", "false");
+            localStorage.setItem(
+                "descuentoActivo",
+                "false"
+            );
         }
 
-        // Redirigimos a la página principal después de 2 segundos
+        // REDIRIGIR AL INICIO
+
         setTimeout(() => {
-            window.location.href = "index.html"; 
+            window.location.href = "index.html";
         }, 2000);
     });
 });
