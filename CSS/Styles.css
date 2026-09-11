@@ -411,8 +411,48 @@ a {
   min-height: 24px; 
   font-size: 0.9rem; 
   margin-top: 10px;
+
 }
 
+/* --- CORRECCIÓN DEFINITIVA DE LA BARRA DE BÚSQUEDA --- */
+.products-controls .input-group {
+    flex-wrap: nowrap !important; /* Fuerza a que no salten a la siguiente línea */
+    width: 100%;
+}
+
+.products-controls .input-group .form-control {
+    width: auto !important; /* Anula tu width: 100% que estaba rompiendo la fila */
+    flex: 1 1 auto !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.products-controls .input-group .search-btn {
+    width: 60px !important;
+    flex-shrink: 0 !important; /* Evita que la lupa se aplaste */
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+/* --- FUSIÓN VISUAL DE LA BARRA DE BÚSQUEDA --- */
+.products-controls .search-btn {
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--primary-blue) !important;
+    border-right: none !important; /* Elimina la línea divisoria doble */
+    border-radius: 6px 0 0 6px !important; /* Esquinas redondas solo a la izquierda */
+    color: var(--text-muted) !important;
+}
+
+.products-controls #search-input {
+    border-left: none !important; /* Se engancha al botón sin línea */
+    border-radius: 0 6px 6px 0 !important; /* Esquinas redondas solo a la derecha */
+}
+
+/* Efecto al hacer clic en la barra */
+.products-controls #search-input:focus {
+    border-left: none !important;
+    box-shadow: 0 0 10px rgba(30, 144, 255, 0.3) !important;
+}
 /* ==========================================================================
    5. PIE DE PÁGINA (FOOTER)
    ========================================================================== */
@@ -481,7 +521,7 @@ a {
   .products-grid { grid-template-columns: repeat(2, 1fr); }
   .hero h2 { font-size: 45px; }
   .products-controls .container { flex-direction: column; align-items: stretch; }
-  .search-container { max-width: none; }
+  .search-container { max-width: 100%; }
   #category-filter { width: 100%; }
 }
 
