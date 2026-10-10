@@ -1,0 +1,506 @@
+/* ==========================================================================
+   1. VARIABLES Y CONFIGURACIÓN BASE
+   ========================================================================== */
+:root {
+  --bg-black: #000000;
+  --bg-dark-card: #121212;
+  --bg-input: #1a1a1a;
+  --primary-blue: #1e90ff;
+  --neon-green: #39ff14;
+  --text-white: #ffffff;
+  --text-muted: #a0a0a0;
+  --font-orbitron: 'Orbitron', sans-serif;
+  --font-roboto: 'Roboto', Arial, sans-serif;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-roboto);
+  background-color: var(--bg-black);
+  color: var(--text-white);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main { 
+  flex: 1 0 auto; 
+}
+
+a { 
+  text-decoration: none; 
+  color: inherit; 
+}
+
+/* ==========================================================================
+   2. ENCABEZADO Y NAVEGACIÓN
+   ========================================================================== */
+.header {
+  background-color: rgba(0, 0, 0, 0.95);
+  border-bottom: 2px solid var(--primary-blue);
+  padding: 15px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  min-height: 70px;
+}
+
+.logo { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+}
+
+.logo-icon { 
+  font-size: 2rem; 
+}
+
+.logo h1 { 
+  font-family: var(--font-orbitron); 
+  font-size: 1.5rem; 
+  font-weight: bold; 
+  margin: 0; 
+  color: var(--primary-blue); 
+}
+
+.logo span:last-child { 
+  font-size: 0.8rem; 
+  letter-spacing: 2px; 
+  color: var(--neon-green); 
+}
+
+.navbar { 
+  display: flex; 
+  gap: 25px; 
+}
+
+.navbar a { 
+  font-weight: 500; 
+  transition: color 0.3s ease; 
+}
+
+.navbar a:hover, 
+.navbar a.active { 
+  color: var(--neon-green); 
+}
+
+.header-actions { 
+  display: flex; 
+  align-items: center; 
+  gap: 15px; 
+}
+
+/* ==========================================================================
+   3. BOTONES E INTERFAZ
+   ========================================================================== */
+.login-button, 
+.secondary-button, 
+.product-button {
+  padding: 9px 16px;
+  border: 1px solid var(--primary-blue);
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--text-white);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-button:hover, 
+.login-button.active, 
+.secondary-button:hover {
+  background-color: var(--primary-blue);
+  color: var(--bg-black);
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(30, 144, 255, 0.5);
+}
+
+.primary-button, 
+.btn-neon, 
+.add-cart-button {
+  background-color: var(--neon-green);
+  color: var(--bg-black);
+  padding: 12px 22px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.primary-button:hover, 
+.add-cart-button:hover {
+  transform: translateY(-2px);
+  background-color: var(--primary-blue);
+  color: var(--text-white);
+  box-shadow: 0 0 12px rgba(30, 144, 255, 0.6);
+}
+
+.btn-neon { 
+  font-family: var(--font-orbitron); 
+}
+
+.btn-neon:hover { 
+  background-color: #2ee010; 
+  box-shadow: 0 0 15px var(--neon-green); 
+  color: var(--bg-black); 
+}
+
+.cart-button { 
+  position: relative; 
+  font-size: 1.3rem; 
+  color: var(--neon-green); 
+  transition: transform 0.2s ease;
+}
+
+.cart-button:hover {
+  transform: scale(1.1);
+}
+
+#cart-count {
+  position: absolute; 
+  top: -8px; 
+  right: -10px;
+  background-color: var(--primary-blue); 
+  color: var(--text-white);
+  font-size: 0.75rem; 
+  font-weight: bold;
+  width: 20px; 
+  height: 20px; 
+  border-radius: 50%;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+}
+
+/* ==========================================================================
+   4. SECCIONES: HERO, PRODUCTOS Y FORMULARIOS
+   ========================================================================== */
+.hero {
+  min-height: 550px; 
+  display: flex; 
+  align-items: center; 
+  padding: 60px 10%;
+  background: linear-gradient(90deg, rgba(0,0,0,0.95), rgba(0,0,0,0.55)), url("https://images.unsplash.com/photo-1542751371-adc38448a05e") center/cover;
+}
+
+.hero-content { 
+  max-width: 650px; 
+}
+
+.hero-subtitle, 
+.product-category, 
+.section-title p, 
+.products-header > p:first-child {
+  color: var(--neon-green); 
+  font-weight: bold; 
+  letter-spacing: 2px; 
+  margin-bottom: 15px;
+}
+
+.hero h2 { 
+  font-size: 60px; 
+  line-height: 1.1; 
+  font-weight: bold; 
+  font-family: var(--font-orbitron);
+}
+
+.hero h2 span, 
+.section-title h2 span, 
+.products-header h2 span { 
+  color: var(--primary-blue); 
+}
+
+.hero p:not(.hero-subtitle), 
+.about-content p { 
+  color: var(--text-muted); 
+  font-size: 18px; 
+  margin: 25px 0; 
+  line-height: 1.7; 
+}
+
+.featured-products, 
+.about-preview, 
+.products-section { 
+  padding: 80px 10%; 
+}
+
+.about-preview { 
+  background-color: #0b0b0b; 
+}
+
+.section-title, 
+.products-header { 
+  text-align: center; 
+  margin-bottom: 45px; 
+}
+
+.section-title h2 { 
+  font-size: 35px; 
+  margin-top: 8px; 
+  font-family: var(--font-orbitron);
+}
+
+.products-grid { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 25px; 
+}
+
+.product-card, 
+.card {
+  background-color: var(--bg-dark-card);
+  border: 1px solid #222;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.card { 
+  border-color: var(--primary-blue) !important; 
+  box-shadow: 0 0 15px rgba(30, 144, 255, 0.2); 
+}
+
+.product-card:hover { 
+  transform: translateY(-7px); 
+  border-color: var(--primary-blue); 
+  box-shadow: 0 0 15px rgba(30, 144, 255, 0.3);
+}
+
+.product-image { 
+  height: 220px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  background-color: #181818; 
+  font-size: 90px; 
+}
+
+.product-info { 
+  padding: 22px; 
+}
+
+.product-info h3 { 
+  margin: 10px 0; 
+  font-size: 21px; 
+  font-family: var(--font-orbitron);
+}
+
+.product-price { 
+  color: var(--primary-blue); 
+  font-size: 20px; 
+  font-weight: bold; 
+  margin-bottom: 18px; 
+}
+
+.product-description { 
+  color: #888; 
+  font-size: 14px; 
+  line-height: 1.5; 
+  min-height: 42px; 
+  margin-bottom: 15px; 
+}
+
+.product-actions { 
+  display: flex; 
+  gap: 8px; 
+}
+
+.product-actions .product-button { 
+  flex: 1; 
+}
+
+.form-label { 
+  color: var(--text-white); 
+  font-weight: 500; 
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.form-control, 
+.search-container input, 
+#category-filter {
+  background-color: var(--bg-input) !important;
+  border: 1px solid var(--primary-blue) !important;
+  color: var(--text-white) !important;
+  border-radius: 6px;
+  padding: 13px 15px;
+  outline: none;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, 
+.search-container input:focus, 
+#category-filter:focus { 
+  box-shadow: 0 0 10px var(--primary-blue); 
+  border-color: var(--neon-green) !important; 
+}
+
+.products-controls { 
+  padding: 30px 0; 
+  background-color: #050505; 
+  border-bottom: 1px solid #222; 
+}
+
+.products-controls .container { 
+  display: flex; 
+  justify-content: space-between; 
+  gap: 20px; 
+  align-items: center; 
+}
+
+.search-container { 
+  position: relative; 
+  flex: 1; 
+  max-width: 500px; 
+}
+
+.search-container input { 
+  padding-right: 45px; 
+}
+
+.search-container i { 
+  position: absolute; 
+  right: 15px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+  color: var(--text-muted); 
+}
+
+#category-filter { 
+  min-width: 220px; 
+}
+
+.no-results { 
+  text-align: center; 
+  padding: 80px 20px; 
+  color: var(--text-muted); 
+}
+
+.no-results i { 
+  font-size: 50px; 
+  color: var(--neon-green); 
+  margin-bottom: 20px; 
+}
+
+#mensajeError { 
+  min-height: 24px; 
+  font-size: 0.9rem; 
+  margin-top: 10px;
+}
+
+/* ==========================================================================
+   5. PIE DE PÁGINA (FOOTER)
+   ========================================================================== */
+.footer {
+  background-color: #080808; 
+  border-top: 1px solid #222; 
+  padding: 40px 0 20px; 
+  margin-top: auto; 
+  flex-shrink: 0;
+}
+
+.footer-container {
+  max-width: 1200px; 
+  margin: 0 auto; 
+  padding: 0 20px;
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: 30px;
+}
+
+.footer-brand h2 { 
+  font-family: var(--font-orbitron); 
+  color: var(--primary-blue); 
+  margin-bottom: 10px; 
+}
+
+.footer-section h3 { 
+  font-family: var(--font-orbitron); 
+  color: var(--neon-green); 
+  font-size: 1.1rem; 
+  margin-bottom: 15px; 
+}
+
+.footer p, 
+.footer-section a { 
+  color: var(--text-muted); 
+  font-size: 14px; 
+  transition: color 0.3s ease; 
+  margin-bottom: 8px; 
+}
+
+.footer-section { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+}
+
+.footer-section a:hover { 
+  color: var(--text-white); 
+}
+
+.footer-bottom { 
+  text-align: center; 
+  border-top: 1px solid #1a1a1a; 
+  margin-top: 30px; 
+  padding-top: 20px; 
+  font-size: 0.85rem; 
+  color: var(--text-muted); 
+}
+
+/* ==========================================================================
+   6. MEDIA QUERIES (RESPONSIVE)
+   ========================================================================== */
+@media (max-width: 900px) {
+  .navbar { display: none; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero h2 { font-size: 45px; }
+  .products-controls .container { flex-direction: column; align-items: stretch; }
+  .search-container { max-width: none; }
+  #category-filter { width: 100%; }
+}
+
+@media (max-width: 768px) {
+  .header-container { flex-direction: column; gap: 15px; }
+  .navbar { display: flex; flex-wrap: wrap; justify-content: center; } 
+  .featured-products, .about-preview, .products-section { padding: 50px 5%; }
+}
+
+@media (max-width: 600px) {
+  .header-container { padding: 15px; }
+  .login-button { font-size: 0; padding: 8px 12px; }
+  .login-button i { font-size: 18px; }
+  .hero { padding: 50px 20px; }
+  .hero h2, .products-header h2 { font-size: 32px; }
+  .products-grid { grid-template-columns: 1fr; }
+}
+/* Hace visible el ícono del calendario en fondos oscuros */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
