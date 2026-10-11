@@ -1,0 +1,8 @@
+/* En el sitio estático el <body> era el contenedor flex.
+   En React todo vive dentro de #root, así que replicamos ese layout
+   para que el footer siga pegado abajo. */
+#root {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+}
