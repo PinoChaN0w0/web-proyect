@@ -17,20 +17,28 @@ npm run preview  # sirve /dist localmente
 
 ```
 src/
+  api/          client.js (cliente HTTP para la API Spring Boot, VITE_API_URL)
   components/   Layout, Header, Footer, ProductCard, ProductImage
   context/      CartContext (carrito), AuthContext (login/registro/sesión)
-  data/         productos.js (catálogo único)
-  pages/        Home, Productos, ProductoDetalle, Carrito, Login, Registro
+  data/         productos.js (catálogo; a migrar a consumo de API)
+  pages/        Home, Productos, ProductoDetalle, Carrito, Login, Registro, Admin
   styles/       Styles.css (original) + react-overrides.css
   utils/        format.js, validators.js
 public/ASSETS/  imágenes de productos
+backend/        API REST Spring Boot + PostgreSQL (auth JWT/BCrypt, roles, CRUD)
+docs/           documentación, Postman, respaldo SQL
 ```
+
+- Detalle de la implementación full stack y pasos pendientes: `docs/IMPLEMENTACION.md`.
+- Backend: `backend/README.md` (variables de entorno, ejecución, endpoints).
 
 ## Despliegue
 
 Es una SPA con rutas del lado del cliente: el hosting debe redirigir cualquier
 ruta a `index.html` (Netlify/Vercel lo hacen con una regla de rewrite; en
-GitHub Pages hay que usar HashRouter o un `404.html`).
+GitHub Pages hay que usar HashRouter o un `404.html`). Para la entrega full stack,
+desplegar el front y la API (Spring Boot + PostgreSQL en EC2) con URL pública y
+configurar `VITE_API_URL` apuntando a la API.
 
 
 

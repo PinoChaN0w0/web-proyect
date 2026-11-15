@@ -1,0 +1,122 @@
+{
+  "info": {
+    "name": "Level-Up Gamer API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección de endpoints REST (Spring Boot + PostgreSQL)"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Perez\",\n  \"fechaNacimiento\": \"2000-01-01\",\n  \"email\": \"juan@correo.cl\",\n  \"password\": \"secreto123\",\n  \"confirmarPassword\": \"secreto123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@levelup.cl\",\n  \"password\": \"Admin123!\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        { "name": "List products", "request": { "method": "GET", "url": "{{baseUrl}}/api/products" } },
+        { "name": "Get product", "request": { "method": "GET", "url": "{{baseUrl}}/api/products/1" } },
+        {
+          "name": "Create product (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/products",
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Nuevo\",\n  \"categoria\": \"Accesorios\",\n  \"precio\": 19990,\n  \"emoji\": \"🎮\",\n  \"imagen\": null,\n  \"descripcion\": \"Desc\"\n}" }
+          }
+        },
+        {
+          "name": "Update product (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/products/1",
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Catan\",\n  \"categoria\": \"Juegos de mesa\",\n  \"precio\": 29990,\n  \"emoji\": \"🎲\",\n  \"imagen\": \"ASSETS/Productos/catan.jpg\",\n  \"descripcion\": \"Actualizado\"\n}" }
+          }
+        },
+        {
+          "name": "Delete product (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/products/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users (ADMIN)",
+      "item": [
+        {
+          "name": "List users",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/users" }
+        },
+        {
+          "name": "Get user",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/users/1" }
+        },
+        {
+          "name": "Create user",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/users",
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Cliente\",\n  \"email\": \"cliente@correo.cl\",\n  \"password\": \"secreto123\",\n  \"fechaNacimiento\": \"2000-05-10\",\n  \"role\": \"CLIENTE\"\n}" }
+          }
+        },
+        {
+          "name": "Update user",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/users/2",
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Cliente Editado\",\n  \"email\": \"cliente@correo.cl\",\n  \"password\": \"\",\n  \"fechaNacimiento\": \"2000-05-10\",\n  \"role\": \"CLIENTE\"\n}" }
+          }
+        },
+        {
+          "name": "Delete user",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/users/2" }
+        }
+      ]
+    }
+  ]
+}
