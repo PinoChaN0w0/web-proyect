@@ -1,10 +1,24 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard.jsx";
-import { productos, idsDestacados } from "../data/productos.js";
+import { api } from "../api/client.js";
 
-const destacados = idsDestacados.map((id) => productos.find((p) => p.id === id)).filter(Boolean);
+const IDS_DESTACADOS = [5, 8, 4];
 
 export default function Home() {
+  const [productos, setProductos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    api.getProducts()
+      .then((data) => setProductos(Array.isArray(data) ? data : []))
+      .catch((e) => setError(e.message || "No se pudieron cargar los productos."))
+      .finally(() => setCargando(false));
+  }, []);
+
+  const destacados = IDS_DESTACADOS.map((id) => productos.find((p) => p.id === id)).filter(Boolean);
+
   return (
     <main>
       <section className="hero">
@@ -32,11 +46,15 @@ export default function Home() {
             PRODUCTOS <span>DESTACADOS</span>
           </h2>
         </div>
-        <div className="products-grid">
-          {destacados.map((p) => (
-            <ProductCard key={p.id} producto={p} compacto />
-          ))}
-        </div>
+        {cargando && <p className="text-center">Cargando productos...</p>}
+        {error && <p className="text-center" style={{ color: "#ff4d4d" }}>{error}</p>}
+        {!cargando && !error && (
+          <div className="products-grid">
+            {destacados.map((p) => (
+              <ProductCard key={p.id} producto={p} compacto />
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="about-preview">

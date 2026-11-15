@@ -1,18 +1,34 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ProductImage from "../components/ProductImage.jsx";
 import { useCart } from "../context/CartContext.jsx";
-import { productos } from "../data/productos.js";
+import { api } from "../api/client.js";
 import { formatearPrecio } from "../utils/format.js";
 
 export default function ProductoDetalle() {
   const { id } = useParams();
   const { agregar } = useCart();
-  const producto = productos.find((p) => p.id === Number(id));
+  const [producto, setProducto] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
 
-  if (!producto) {
+  useEffect(() => {
+    setCargando(true);
+    setError("");
+    api.getProduct(id)
+      .then(setProducto)
+      .catch((e) => setError(e.status === 404 ? "Producto no encontrado" : (e.message || "Error al cargar el producto")))
+      .finally(() => setCargando(false));
+  }, [id]);
+
+  if (cargando) {
+    return <main className="container my-5 text-center"><p>Cargando producto...</p></main>;
+  }
+
+  if (error || !producto) {
     return (
       <main className="container my-5 text-center">
-        <h2 style={{ fontFamily: "var(--font-orbitron)" }}>Producto no encontrado</h2>
+        <h2 style={{ fontFamily: "var(--font-orbitron)" }}>{error || "Producto no encontrado"}</h2>
         <Link to="/productos" className="btn btn-neon mt-3">Volver a productos</Link>
       </main>
     );

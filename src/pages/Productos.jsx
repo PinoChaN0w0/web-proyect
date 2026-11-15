@@ -1,17 +1,29 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ProductCard from "../components/ProductCard.jsx";
-import { productos, categorias } from "../data/productos.js";
+import { api } from "../api/client.js";
 
 export default function Productos() {
+  const [productos, setProductos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
   const [texto, setTexto] = useState("");
   const [categoria, setCategoria] = useState("todos");
+
+  useEffect(() => {
+    api.getProducts()
+      .then((data) => setProductos(Array.isArray(data) ? data : []))
+      .catch((e) => setError(e.message || "No se pudieron cargar los productos."))
+      .finally(() => setCargando(false));
+  }, []);
+
+  const categorias = useMemo(() => [...new Set(productos.map((p) => p.categoria))], [productos]);
 
   const filtrados = useMemo(() => {
     const q = texto.toLowerCase();
     return productos.filter(
       (p) => p.nombre.toLowerCase().includes(q) && (categoria === "todos" || p.categoria === categoria)
     );
-  }, [texto, categoria]);
+  }, [productos, texto, categoria]);
 
   return (
     <main>
@@ -74,18 +86,24 @@ export default function Productos() {
 
       <section className="products-section">
         <div className="container">
-          <div className="products-grid">
-            {filtrados.map((p) => (
-              <ProductCard key={p.id} producto={p} />
-            ))}
-          </div>
+          {cargando && <p className="text-center">Cargando productos...</p>}
+          {error && <p className="text-center" style={{ color: "#ff4d4d" }}>{error}</p>}
+          {!cargando && !error && (
+            <>
+              <div className="products-grid">
+                {filtrados.map((p) => (
+                  <ProductCard key={p.id} producto={p} />
+                ))}
+              </div>
 
-          {filtrados.length === 0 && (
-            <div className="no-results" style={{ display: "block" }}>
-              <i className="fa-solid fa-gamepad"></i>
-              <h3>No encontramos productos</h3>
-              <p>Intenta buscar otro producto o categoría.</p>
-            </div>
+              {filtrados.length === 0 && (
+                <div className="no-results" style={{ display: "block" }}>
+                  <i className="fa-solid fa-gamepad"></i>
+                  <h3>No encontramos productos</h3>
+                  <p>Intenta buscar otro producto o categoría.</p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>

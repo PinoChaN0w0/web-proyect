@@ -1,105 +1,85 @@
 import { createContext, useCallback, useContext, useState } from "react";
-import { esCorreoDuoc, esEmailValido, esMayorDeEdad } from "../utils/validators.js";
+import { api, setToken } from "../api/client.js";
 
 const AuthContext = createContext(null);
+const AUTH_KEY = "auth";
 
-const leerJSON = (clave, defecto) => {
+function leerAuth() {
   try {
-    return JSON.parse(localStorage.getItem(clave)) ?? defecto;
+    const raw = localStorage.getItem(AUTH_KEY);
+    return raw ? JSON.parse(raw) : null;
   } catch {
-    return defecto;
+    return null;
   }
-};
+}
 
-// Mismas claves de localStorage que el sitio estático
-function leerSesion() {
-  if (localStorage.getItem("usuarioLogueado") !== "true") return null;
-  return {
-    usuario: leerJSON("usuarioActual", null),
-    descuentoActivo: localStorage.getItem("descuentoActivo") === "true",
-  };
+function persistirAuth(data) {
+  if (data) {
+    localStorage.setItem(AUTH_KEY, JSON.stringify(data));
+    if (data.token) setToken(data.token);
+  } else {
+    localStorage.removeItem(AUTH_KEY);
+    setToken(null);
+  }
 }
 
 export function AuthProvider({ children }) {
-  const [sesion, setSesion] = useState(leerSesion);
+  const [sesion, setSesion] = useState(leerAuth);
 
-  const login = useCallback((emailRaw, passwordRaw) => {
-    const email = emailRaw.trim().toLowerCase();
-    const password = passwordRaw.trim();
-
+  const login = useCallback(async (emailRaw, passwordRaw) => {
+    const email = (emailRaw || "").trim().toLowerCase();
+    const password = (passwordRaw || "").trim();
     if (!email || !password) {
       return { ok: false, error: "Error: Todos los campos son obligatorios." };
     }
-
-    const usuarios = leerJSON("usuarios", []);
-    const encontrado = usuarios.find((u) => u.email === email && u.password === password);
-    if (!encontrado) {
-      return { ok: false, error: "Error: Correo o contraseña incorrectos." };
+    try {
+      const res = await api.login(email, password);
+      const data = {
+        token: res.token,
+        usuario: { id: res.id, nombre: res.nombre, email: res.email },
+        role: res.role,
+        descuentoActivo: Boolean(res.descuentoActivo),
+      };
+      persistirAuth(data);
+      setSesion(data);
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: e.message || "Error: Correo o contraseña incorrectos." };
     }
-
-    const usuario = { nombre: encontrado.nombre, email: encontrado.email };
-    const descuentoActivo = esCorreoDuoc(email);
-
-    localStorage.setItem("usuarioLogueado", "true");
-    localStorage.setItem("usuarioActual", JSON.stringify(usuario));
-    localStorage.setItem("correoUsuario", email);
-    localStorage.setItem("descuentoActivo", String(descuentoActivo));
-
-    setSesion({ usuario, descuentoActivo });
-    return { ok: true };
   }, []);
 
-  const registrar = useCallback((datosRaw) => {
-    const datos = {
-      nombre: datosRaw.nombre.trim(),
+  const registrar = useCallback(async (datosRaw) => {
+    const payload = {
+      nombre: (datosRaw.nombre || "").trim(),
       fechaNacimiento: datosRaw.fechaNacimiento,
-      email: datosRaw.email.trim().toLowerCase(),
-      password: datosRaw.password,
-      confirmarPassword: datosRaw.confirmarPassword,
+      email: (datosRaw.email || "").trim().toLowerCase(),
+      password: datosRaw.password || "",
+      confirmarPassword: datosRaw.confirmarPassword || "",
     };
-
-    if (Object.values(datos).some((v) => !v)) {
+    if (Object.values(payload).some((v) => !v)) {
       return { ok: false, error: "Error: Todos los campos son obligatorios." };
     }
-    if (!esMayorDeEdad(datos.fechaNacimiento)) {
-      return { ok: false, error: "Error: Debes ser mayor de 18 años para registrarte." };
+    try {
+      await api.register(payload);
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: e.message || "Error al registrar usuario." };
     }
-    if (!esEmailValido(datos.email)) {
-      return { ok: false, error: "Error: Ingresa un correo electrónico válido." };
-    }
-    if (datos.password.length < 6) {
-      return { ok: false, error: "Error: La contraseña debe tener al menos 6 caracteres." };
-    }
-    if (datos.password !== datos.confirmarPassword) {
-      return { ok: false, error: "Error: Las contraseñas no coinciden." };
-    }
-
-    const usuarios = leerJSON("usuarios", []);
-    if (usuarios.some((u) => u.email === datos.email)) {
-      return { ok: false, error: "Error: Este correo ya está registrado." };
-    }
-
-    usuarios.push({
-      nombre: datos.nombre,
-      fechaNacimiento: datos.fechaNacimiento,
-      email: datos.email,
-      password: datos.password,
-    });
-    localStorage.setItem("usuarios", JSON.stringify(usuarios));
-    return { ok: true };
   }, []);
 
   const logout = useCallback(() => {
-    ["usuarioLogueado", "usuarioActual", "correoUsuario", "descuentoActivo"].forEach((k) =>
-      localStorage.removeItem(k)
-    );
+    persistirAuth(null);
     setSesion(null);
   }, []);
 
+  const role = sesion?.role ?? null;
   const value = {
     usuario: sesion?.usuario ?? null,
+    role,
+    esAdmin: role === "ADMIN",
     descuentoActivo: sesion?.descuentoActivo ?? false,
-    estaLogueado: Boolean(sesion),
+    estaLogueado: Boolean(sesion?.token),
+    token: sesion?.token ?? null,
     login,
     registrar,
     logout,

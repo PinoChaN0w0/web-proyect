@@ -12,7 +12,7 @@ const enlaces = [
 
 export default function Header() {
   const { totalItems } = useCart();
-  const { estaLogueado, usuario, logout } = useAuth();
+  const { estaLogueado, usuario, logout, esAdmin } = useAuth();
 
   return (
     <header className="header">
@@ -31,6 +31,12 @@ export default function Header() {
               {texto}
             </NavLink>
           ))}
+          {esAdmin && (
+            <>
+              <NavLink to="/admin" className={({ isActive }) => (isActive ? "active" : undefined)}>Admin</NavLink>
+              <NavLink to="/admin/usuarios" className={({ isActive }) => (isActive ? "active" : undefined)}>Usuarios</NavLink>
+            </>
+          )}
         </nav>
 
         <div className="header-actions">

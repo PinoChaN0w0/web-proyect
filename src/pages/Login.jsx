@@ -1,28 +1,27 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Login() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mensaje, setMensaje] = useState({ texto: "", exito: false });
-  const timer = useRef(null);
+  const [mensaje, setMensaje] = useState("");
+  const [cargando, setCargando] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  useEffect(() => () => clearTimeout(timer.current), []);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setMensaje({ texto: "", exito: false });
-
-    const res = login(email, password);
+    setMensaje("");
+    setCargando(true);
+    const res = await login(email, password);
+    setCargando(false);
     if (!res.ok) {
-      setMensaje({ texto: res.error, exito: false });
+      setMensaje(res.error);
       return;
     }
-    setMensaje({ texto: "¡Inicio de sesión exitoso! Redirigiendo...", exito: true });
-    timer.current = setTimeout(() => navigate("/"), 2000);
+    setMensaje("Inicio de sesión exitoso. Redirigiendo...");
+    setTimeout(() => navigate("/"), 1200);
   };
 
   return (
@@ -30,56 +29,42 @@ export default function Login() {
       <div className="row justify-content-center">
         <div className="col-md-8 col-lg-5">
           <div className="card p-4 p-md-5">
-            <h2 className="text-center mb-2" style={{ fontFamily: "var(--font-orbitron)", color: "var(--primary-blue)" }}>
+            <h2 className="text-center mb-4" style={{ fontFamily: "var(--font-orbitron)", color: "var(--primary-blue)" }}>
               INICIAR SESIÓN
             </h2>
-            <p className="text-center mb-4" style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>
-              Bienvenido de vuelta a la arena
-            </p>
 
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
-                <label htmlFor="email" className="form-label">Correo Electrónico</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  placeholder="ejemplo@duocuc.cl"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <div className="form-text mt-1" style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>
-                  Usa @duocuc.cl para activar tu descuento
-                </div>
+                <label htmlFor="correo" className="form-label">Correo Electrónico</label>
+                <input type="email" className="form-control" id="correo" placeholder="ejemplo@correo.com" required
+                  value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
 
               <div className="mb-3">
                 <label htmlFor="password" className="form-label">Contraseña</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  placeholder="******"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <input type="password" className="form-control" id="password" placeholder="********" required
+                  value={password} onChange={(e) => setPassword(e.target.value)} />
               </div>
 
-              <p className="text-center fw-bold" style={{ color: mensaje.exito ? "#39FF14" : "#ff4d4d" }}>
-                {mensaje.texto}
+              <p
+                id="mensajeLogin"
+                className="text-center mt-3 fw-bold"
+                style={{ color: mensaje.startsWith("Error") ? "#ff4d4d" : "var(--neon-green)" }}
+              >
+                {mensaje}
               </p>
 
-              <div className="d-grid gap-2 mt-4">
-                <button type="submit" className="btn btn-neon py-2">ENTRAR A LA ARENA</button>
+              <div className="d-grid mt-4">
+                <button type="submit" className="btn btn-neon py-2" disabled={cargando}>
+                  {cargando ? "INGRESANDO..." : "INGRESAR"}
+                </button>
               </div>
 
-              <div className="mt-4 text-center">
-                <p className="mb-0 text-light">
-                  ¿No tienes cuenta?{" "}
-                  <Link to="/registro" style={{ color: "var(--primary-blue)", fontWeight: "bold" }}>Regístrate aquí</Link>
-                </p>
+              <div className="text-center mt-4">
+                <p className="mb-0 text-muted">¿No tienes una cuenta?</p>
+                <Link to="/registro" style={{ color: "var(--primary-blue)", textDecoration: "none", fontWeight: "bold" }}>
+                  Regístrate aquí
+                </Link>
               </div>
             </form>
           </div>
