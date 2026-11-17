@@ -5,7 +5,7 @@ Rama/espacio: código creado en el repositorio actual (`web-proyect`).
 
 ## 1. Resumen de lo realizado
 
-Se creó la base de un backend **Spring Boot + PostgreSQL** y artefactos de integración/documentación para cumplir la rúbrica indicada (React + Spring Boot + BD, login con BCrypt/JWT, roles `ADMIN`/`CLIENTE`, CRUD productos, CRUD usuarios admin, CORS, variables de entorno, despliegue cloud, documentación). Se priorizó **PostgreSQL** (BD libre, preferencia del alumno, a ejecutar en EC2) y auth propia en backend (no Auth0) según la rúbrica.
+Se creó la base de un backend **Spring Boot + PostgreSQL** y artefactos de integración/documentación para cumplir la rúbrica indicada (React + Spring Boot + BD, login con BCrypt/JWT, roles `ADMIN`/`CLIENTE`, CRUD productos, CRUD usuarios admin, CORS, variables de entorno, despliegue cloud, documentación). Se priorizó **PostgreSQL** (BD libre, preferencia del alumno, a ejecutar en EC2) y autenticación propia en el backend según la rúbrica.
 
 ### Estructura agregada
 - `backend/` — API REST Spring Boot (Maven, Java 17)
@@ -110,6 +110,5 @@ Se creó la base de un backend **Spring Boot + PostgreSQL** y artefactos de inte
 
 ## 7. Decisiones y notas
 - **BD:** PostgreSQL (preferencia y BD libre confirmada), ejecutándose en EC2; se descartó Supabase como BD para mantener control directo, pero es compatible si se requiere.
-- **Auth0:** no se usó; la rúbrica exige auth propia en backend (BCrypt + tokens). `Auth0` queda como opción externa solo si el docente lo permite como complemento.
 - **Extras opcionales (no implementados):** API de promos dedicada, Webpay (ambiente integración), Resend, reCAPTCHA, Google Maps/Shipit — pueden agregarse sobre esta base sin romper el core.
 - **Compatibilidad con estado anterior:** el front original usa `localStorage` (`carrito`, `usuarioLogueado`, etc.) y catálogo estático; la migración completa a API requiere los cambios indicados en §3 para evitar datos quemados y cumplir integración front-back.
