@@ -1,9 +1,20 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Si despliegas en un subdirectorio (ej. GitHub Pages: /web-proyect/),
-// cambia base por "/web-proyect/".
 export default defineConfig({
   base: "/",
   plugins: [react()],
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: "./src/test/setup.js",
+    include: ["src/**/*.test.{js,jsx}"],
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.{js,jsx}"],
+      exclude: ["src/main.jsx"],
+      reporter: ["text", "html"],
+      thresholds: { statements: 60, branches: 60, functions: 60, lines: 60 },
+    },
+  },
 });
