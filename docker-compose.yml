@@ -1,0 +1,72 @@
+services:
+  db:
+    image: postgres:16
+    container_name: levelup-db
+    environment:
+      POSTGRES_DB: levelup
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d levelup"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  auth-service:
+    build: ./services/auth-service
+    container_name: levelup-auth
+    environment:
+      PORT: 8081
+      DB_URL: jdbc:postgresql://db:5432/levelup
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: bJIFhz49cpoTCQeVGfH4UdTTt+/nfS2YScFoU6q/+/XJM2aiZVMXriRDPrTGiUDK
+      JWT_EXPIRATION_MS: 86400000
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      JPA_DDL_AUTO: update
+    ports:
+      - "8081:8081"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  product-service:
+    build: ./services/product-service
+    container_name: levelup-product
+    environment:
+      PORT: 8082
+      DB_URL: jdbc:postgresql://db:5432/levelup
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: bJIFhz49cpoTCQeVGfH4UdTTt+/nfS2YScFoU6q/+/XJM2aiZVMXriRDPrTGiUDK
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      JPA_DDL_AUTO: update
+    ports:
+      - "8082:8082"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  user-service:
+    build: ./services/user-service
+    container_name: levelup-user
+    environment:
+      PORT: 8083
+      DB_URL: jdbc:postgresql://db:5432/levelup
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: bJIFhz49cpoTCQeVGfH4UdTTt+/nfS2YScFoU6q/+/XJM2aiZVMXriRDPrTGiUDK
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      JPA_DDL_AUTO: update
+    ports:
+      - "8083:8083"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
