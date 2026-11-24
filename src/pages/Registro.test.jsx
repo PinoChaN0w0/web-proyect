@@ -1,8 +1,17 @@
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { AuthProvider } from "../context/AuthContext.jsx";
 import Registro from "./Registro.jsx";
+import { api } from "../api/client.js";
+
+// El registro ya no usa localStorage: llama a api.register (backend).
+// Se mockea el cliente para no hacer peticiones reales.
+vi.mock("../api/client.js", () => ({
+  api: { register: vi.fn(), login: vi.fn() },
+  setToken: vi.fn(),
+  getToken: vi.fn(),
+}));
 
 function renderRegistro() {
   return render(
@@ -15,97 +24,98 @@ function renderRegistro() {
 }
 
 const valido = {
-  nombre: "ShadowGamer99",
+  nombre: "Shadow Gamer",
   email: "shadow@ejemplo.cl",
   fechaNacimiento: "1995-06-15",
   password: "clave1234",
   confirmarPassword: "clave1234",
-  codigoReferido: "",
 };
 
 const etiquetas = {
-  nombre: /Gamer Tag/i,
+  nombre: /Nombre Completo/i,
   email: /Correo Electrónico/i,
   fechaNacimiento: /Fecha de Nacimiento/i,
-  password: /Contraseña/i,
-  confirmarPassword: /Confirmar/i,
-  codigoReferido: /Código de Referido/i,
+  password: /^Contraseña$/i, // anclado: si no, también coincide con "Confirmar Contraseña"
+  confirmarPassword: /Confirmar Contraseña/i,
 };
 
 function llenarYEnviar(datos) {
   for (const [campo, valor] of Object.entries(datos)) {
     fireEvent.change(screen.getByLabelText(etiquetas[campo]), { target: { value: valor } });
   }
-  // submit directo: la validación de HTML (required, type=email) la cubre el
-  // navegador; aquí probamos la validación de la aplicación en registrar().
-  fireEvent.submit(screen.getByRole("button", { name: /registrarme/i }).closest("form"));
+  fireEvent.submit(screen.getByRole("button", { name: /registrarse/i }).closest("form"));
 }
 
 describe("Registro", () => {
-  it("muestra los 6 campos del formulario", () => {
+  beforeEach(() => {
+    api.register.mockReset();
+  });
+
+  it("muestra los 5 campos del formulario", () => {
     renderRegistro();
-    expect(screen.getByLabelText(/Gamer Tag/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Correo Electrónico/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Fecha de Nacimiento/i)).toHaveAttribute("type", "date");
-    expect(screen.getByLabelText(/^Contraseña/i)).toHaveAttribute("type", "password");
-    expect(screen.getByLabelText(/Confirmar/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Código de Referido/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(etiquetas.nombre)).toBeInTheDocument();
+    expect(screen.getByLabelText(etiquetas.email)).toHaveAttribute("type", "email");
+    expect(screen.getByLabelText(etiquetas.fechaNacimiento)).toHaveAttribute("type", "date");
+    expect(screen.getByLabelText(etiquetas.password)).toHaveAttribute("type", "password");
+    expect(screen.getByLabelText(etiquetas.confirmarPassword)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /inicia sesión aquí/i })).toHaveAttribute("href", "/login");
   });
 
-  it("registra un usuario válido y muestra mensaje de éxito", () => {
+  it("registra un usuario válido, normaliza el correo y muestra éxito", async () => {
+    api.register.mockResolvedValue({});
+    renderRegistro();
+    llenarYEnviar({ ...valido, email: "  SHADOW@Ejemplo.CL " });
+
+    expect(await screen.findByText("¡Registro exitoso! Ya puedes iniciar sesión.")).toBeInTheDocument();
+    expect(api.register).toHaveBeenCalledWith({
+      nombre: "Shadow Gamer",
+      fechaNacimiento: "1995-06-15",
+      email: "shadow@ejemplo.cl",
+      password: "clave1234",
+      confirmarPassword: "clave1234",
+    });
+  });
+
+  it("limpia el formulario tras un registro exitoso", async () => {
+    api.register.mockResolvedValue({});
     renderRegistro();
     llenarYEnviar(valido);
-    expect(screen.getByText("¡Registro exitoso! Redirigiendo al inicio de sesión...")).toBeInTheDocument();
-    expect(JSON.parse(localStorage.getItem("usuarios"))).toHaveLength(1);
+    await screen.findByText(/registro exitoso/i);
+    expect(screen.getByLabelText(etiquetas.nombre)).toHaveValue("");
   });
 
-  it("rechaza menores de edad", () => {
+  it("no llama al backend si falta algún campo", async () => {
     renderRegistro();
-    const hoy = new Date().toISOString().slice(0, 10);
-    llenarYEnviar({ ...valido, fechaNacimiento: hoy });
-    expect(screen.getByText("Error: Debes ser mayor de 18 años para registrarte.")).toBeInTheDocument();
-    expect(localStorage.getItem("usuarios")).toBeNull();
+    llenarYEnviar({ ...valido, nombre: "" });
+    expect(await screen.findByText("Error: Todos los campos son obligatorios.")).toBeInTheDocument();
+    expect(api.register).not.toHaveBeenCalled();
   });
 
-  it("rechaza correo inválido", () => {
-    renderRegistro();
-    llenarYEnviar({ ...valido, email: "no-es-un-correo" });
-    expect(screen.getByText("Error: Ingresa un correo electrónico válido.")).toBeInTheDocument();
-  });
-
-  it("rechaza contraseña corta", () => {
-    renderRegistro();
-    llenarYEnviar({ ...valido, password: "123", confirmarPassword: "123" });
-    expect(screen.getByText("Error: La contraseña debe tener al menos 6 caracteres.")).toBeInTheDocument();
-  });
-
-  it("rechaza contraseñas que no coinciden", () => {
-    renderRegistro();
-    llenarYEnviar({ ...valido, confirmarPassword: "distinta1" });
-    expect(screen.getByText("Error: Las contraseñas no coinciden.")).toBeInTheDocument();
-  });
-
-  it("rechaza correo ya registrado", () => {
+  // Las validaciones de edad, correo, largo de contraseña y duplicados ahora
+  // las hace el backend; aquí se prueba que el front muestre su mensaje de error.
+  it.each([
+    "Error: Debes ser mayor de 18 años para registrarte.",
+    "Error: Ingresa un correo electrónico válido.",
+    "Error: La contraseña debe tener al menos 6 caracteres.",
+    "Error: Las contraseñas no coinciden.",
+    "Error: Este correo ya está registrado.",
+  ])("muestra el error del backend: %s", async (mensaje) => {
+    api.register.mockRejectedValue(new Error(mensaje));
     renderRegistro();
     llenarYEnviar(valido);
-    llenarYEnviar(valido);
-    expect(screen.getByText("Error: Este correo ya está registrado.")).toBeInTheDocument();
-    expect(JSON.parse(localStorage.getItem("usuarios"))).toHaveLength(1);
+    expect(await screen.findByText(mensaje)).toBeInTheDocument();
   });
 
-  it("el campo código de referido es opcional y no rompe el registro", () => {
+  it("un error previo desaparece tras un registro exitoso", async () => {
+    api.register.mockRejectedValueOnce(new Error("Error: Este correo ya está registrado."));
+    api.register.mockResolvedValueOnce({});
     renderRegistro();
-    llenarYEnviar({ ...valido, codigoReferido: "GAMER2026" });
-    expect(screen.getByText(/registro exitoso/i)).toBeInTheDocument();
-  });
 
-  it("un error previo desaparece tras un registro exitoso", () => {
-    renderRegistro();
-    llenarYEnviar({ ...valido, password: "123", confirmarPassword: "123" });
-    expect(screen.getByText(/al menos 6 caracteres/i)).toBeInTheDocument();
     llenarYEnviar(valido);
-    expect(screen.queryByText(/al menos 6 caracteres/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/registro exitoso/i)).toBeInTheDocument();
+    expect(await screen.findByText(/ya está registrado/i)).toBeInTheDocument();
+
+    llenarYEnviar(valido);
+    await waitFor(() => expect(screen.queryByText(/ya está registrado/i)).not.toBeInTheDocument());
+    expect(await screen.findByText(/registro exitoso/i)).toBeInTheDocument();
   });
 });

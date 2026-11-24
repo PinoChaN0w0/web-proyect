@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client.js";
+import { useNotificaciones } from "../context/NotificationContext.jsx";
 import { formatearPrecio } from "../utils/format.js";
 
 const vacio = { nombre: "", categoria: "", precio: "", emoji: "", descripcion: "", imagen: "" };
 
 export default function Admin() {
+  const { confirmar } = useNotificaciones();
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [form, setForm] = useState(vacio);
@@ -78,8 +80,10 @@ export default function Admin() {
     setMensaje("");
   };
 
-  const handleEliminar = async (p) => {
-    if (!window.confirm(`¿Eliminar "${p.nombre}"?`)) return;
+  const handleEliminar = (p) =>
+    confirmar(`¿Eliminar "${p.nombre}"?`, () => eliminar(p), { titulo: "Eliminar producto", textoAceptar: "Eliminar" });
+
+  const eliminar = async (p) => {
     setError("");
     setMensaje("");
     try {

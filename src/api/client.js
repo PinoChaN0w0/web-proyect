@@ -2,9 +2,9 @@
 // Por defecto usa URLs separadas por servicio; si defines VITE_API_URL se usa como fallback común.
 const trim = (u) => (u || "").replace(/\/$/, "");
 const FALLBACK = trim(import.meta.env.VITE_API_URL) || "http://localhost:8080";
-const AUTH_URL = trim(import.meta.env.VITE_AUTH_API_URL) || "http://localhost:8081";
-const PRODUCT_URL = trim(import.meta.env.VITE_PRODUCT_API_URL) || "http://localhost:8082";
-const USER_URL = trim(import.meta.env.VITE_USER_API_URL) || "http://localhost:8083";
+const AUTH_URL = trim(import.meta.env.VITE_AUTH_API_URL) || FALLBACK;
+const PRODUCT_URL = trim(import.meta.env.VITE_PRODUCT_API_URL) || FALLBACK;
+const USER_URL = trim(import.meta.env.VITE_USER_API_URL) || FALLBACK;
 const TOKEN_KEY = "token";
 
 export function getToken() {

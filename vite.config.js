@@ -12,7 +12,12 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/**/*.{js,jsx}"],
-      exclude: ["src/main.jsx"],
+      exclude: [
+        "src/main.jsx",
+        "src/**/*.spec.{js,jsx}",
+        "src/**/*.test.{js,jsx}",
+        "src/test/**",
+      ],
       reporter: ["text", "html"],
       thresholds: { statements: 60, branches: 60, functions: 60, lines: 60 },
     },

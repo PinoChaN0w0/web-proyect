@@ -1,24 +1,26 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { categorias, productos } from "../data/productos.js";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import Admin from "./Admin.jsx";
+import { productos } from "../data/productos.js";
+import { api } from "../api/client.js";
 
-// El admin muta el módulo del catálogo en memoria: lo restauramos tras cada prueba.
-const catalogoOriginal = [...productos];
-const categoriasOriginales = [...categorias];
+// El panel ya no usa localStorage ni login propio (el acceso lo protege <ProtectedRoute admin>):
+// ahora lista y modifica productos a través del backend.
+vi.mock("../api/client.js", () => ({
+  api: {
+    getProducts: vi.fn(),
+    createProduct: vi.fn(),
+    updateProduct: vi.fn(),
+    deleteProduct: vi.fn(),
+  },
+  setToken: vi.fn(),
+  getToken: vi.fn(),
+}));
 
-afterEach(() => {
-  productos.splice(0, productos.length, ...catalogoOriginal);
-  categorias.splice(0, categorias.length, ...categoriasOriginales);
-});
-
-function renderAdmin() {
-  return render(<Admin />);
-}
-
-function entrarComoAdmin() {
-  sessionStorage.setItem("adminOk", "true");
-  renderAdmin();
+// Renderiza y espera a que la tabla termine de cargar.
+async function renderAdmin() {
+  render(<Admin />);
+  await screen.findByRole("row", { name: /Catan/ });
 }
 
 function llenarFormulario({ nombre, categoria, precio, emoji = "", descripcion = "" }) {
@@ -29,151 +31,135 @@ function llenarFormulario({ nombre, categoria, precio, emoji = "", descripcion =
   if (descripcion) fireEvent.change(screen.getByLabelText("Descripción"), { target: { value: descripcion } });
 }
 
-// submit directo al form: evita que la validación de HTML (min="1", required)
+// submit directo al form: evita que la validación de HTML (min="1")
 // bloquee el evento y así probamos la validación de la aplicación.
 function enviarFormulario(boton = "GUARDAR") {
   fireEvent.submit(screen.getByRole("button", { name: boton }).closest("form"));
 }
 
-describe("Admin – control de acceso", () => {
-  it("sin sesión de admin muestra el formulario de acceso", () => {
-    renderAdmin();
-    expect(screen.getByText("ACCESO ADMIN")).toBeInTheDocument();
-    expect(screen.queryByText("ADMINISTRAR PRODUCTOS")).not.toBeInTheDocument();
-  });
+const filaCatan = () => screen.getByRole("row", { name: /Catan/ });
 
-  it("rechaza credenciales incorrectas", () => {
-    renderAdmin();
-    fireEvent.change(screen.getByLabelText("Correo"), { target: { value: "hacker@x.cl" } });
-    fireEvent.change(screen.getByLabelText("Contraseña"), { target: { value: "adivina" } });
-    fireEvent.click(screen.getByRole("button", { name: "ENTRAR" }));
-    expect(screen.getByText("Error: credenciales de administrador incorrectas.")).toBeInTheDocument();
-    expect(sessionStorage.getItem("adminOk")).toBeNull();
-  });
-
-  it("acepta las credenciales correctas y persiste la sesión en sessionStorage", () => {
-    renderAdmin();
-    fireEvent.change(screen.getByLabelText("Correo"), { target: { value: " admin@levelup.cl " } });
-    fireEvent.change(screen.getByLabelText("Contraseña"), { target: { value: "admin123" } });
-    fireEvent.click(screen.getByRole("button", { name: "ENTRAR" }));
-    expect(screen.getByText("ADMINISTRAR PRODUCTOS")).toBeInTheDocument();
-    expect(sessionStorage.getItem("adminOk")).toBe("true");
-  });
-
-  it("'Salir' limpia la sesión y vuelve al formulario de acceso", () => {
-    entrarComoAdmin();
-    fireEvent.click(screen.getByRole("button", { name: "Salir" }));
-    expect(sessionStorage.getItem("adminOk")).toBeNull();
-    expect(screen.getByText("ACCESO ADMIN")).toBeInTheDocument();
-  });
-
-  it("la sesión admin guardada da acceso directo al panel", () => {
-    entrarComoAdmin();
-    expect(screen.getByText("ADMINISTRAR PRODUCTOS")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Salir" })).toBeInTheDocument();
-  });
+beforeEach(() => {
+  api.getProducts.mockReset().mockResolvedValue(productos);
+  api.createProduct.mockReset().mockResolvedValue({});
+  api.updateProduct.mockReset().mockResolvedValue({});
+  api.deleteProduct.mockReset().mockResolvedValue({});
 });
 
 describe("Admin – listado", () => {
-  it("lista el catálogo completo con precio formateado", () => {
-    entrarComoAdmin();
-    const filas = screen.getAllByRole("row").slice(1);
-    expect(filas).toHaveLength(productos.length);
+  it("lista el catálogo completo con precio formateado", async () => {
+    await renderAdmin();
+    expect(screen.getAllByRole("row").slice(1)).toHaveLength(productos.length);
     // Catan y Razer Goliathus cuestan $29.990: verificamos el de la fila de Catan
-    expect(within(screen.getByRole("row", { name: /Catan/ })).getByText("$29.990 CLP")).toBeInTheDocument();
+    expect(within(filaCatan()).getByText("$29.990 CLP")).toBeInTheDocument();
+  });
+
+  it("muestra el error si el backend no responde", async () => {
+    api.getProducts.mockRejectedValue(new Error("No se pudieron cargar los productos."));
+    render(<Admin />);
+    expect(await screen.findByText("No se pudieron cargar los productos.")).toBeInTheDocument();
   });
 });
 
 describe("Admin – agregar productos", () => {
-  it("valida que nombre y categoría sean obligatorios", () => {
-    entrarComoAdmin();
+  it("valida que nombre y categoría sean obligatorios", async () => {
+    await renderAdmin();
     llenarFormulario({ nombre: "", categoria: "", precio: "100" });
     enviarFormulario();
-    expect(screen.getByText("Error: nombre y categoría son obligatorios.")).toBeInTheDocument();
+    expect(await screen.findByText("Error: nombre y categoría son obligatorios.")).toBeInTheDocument();
+    expect(api.createProduct).not.toHaveBeenCalled();
   });
 
-  it("valida precio mayor a 0 (límite incluido)", () => {
-    entrarComoAdmin();
+  it("valida precio mayor a 0 (límite incluido)", async () => {
+    await renderAdmin();
     llenarFormulario({ nombre: "Prueba", categoria: "Tests", precio: "0" });
     enviarFormulario();
-    expect(screen.getByText("Error: ingresa un precio mayor a 0.")).toBeInTheDocument();
+    expect(await screen.findByText("Error: ingresa un precio mayor a 0.")).toBeInTheDocument();
+    expect(api.createProduct).not.toHaveBeenCalled();
   });
 
-  it("agrega un producto: aparece en la tabla, en localStorage y en el catálogo", () => {
-    entrarComoAdmin();
+  it("crea el producto vía API, muestra el mensaje y recarga la lista", async () => {
+    await renderAdmin();
     llenarFormulario({ nombre: "Teclado Mecánico", categoria: "Accesorios", precio: "45990", descripcion: "Switch rojos." });
     enviarFormulario();
 
-    expect(screen.getByRole("cell", { name: /Teclado Mecánico/ })).toBeInTheDocument();
-    // productosTienda guarda el catálogo completo (incluye el producto nuevo)
-    const guardados = JSON.parse(localStorage.getItem("productosTienda"));
-    expect(guardados).toHaveLength(productos.length);
-    expect(guardados).toContainEqual(
-      expect.objectContaining({ nombre: "Teclado Mecánico", precio: 45990, id: expect.any(Number), imagen: null })
-    );
-    // el catálogo en memoria se actualiza para que la tienda lo muestre
-    expect(productos.some((p) => p.nombre === "Teclado Mecánico")).toBe(true);
+    expect(await screen.findByText("Producto creado correctamente.")).toBeInTheDocument();
+    expect(api.createProduct).toHaveBeenCalledWith({
+      nombre: "Teclado Mecánico",
+      categoria: "Accesorios",
+      precio: 45990,
+      emoji: "🎮", // emoji por defecto
+      imagen: null, // imagen vacía => null
+      descripcion: "Switch rojos.",
+    });
+    expect(api.getProducts).toHaveBeenCalledTimes(2); // carga inicial + recarga
   });
 
-  it("una categoría nueva se agrega al listado de categorías", () => {
-    entrarComoAdmin();
-    llenarFormulario({ nombre: "Producto Raro", categoria: "Nueva Categoría", precio: "100" });
-    enviarFormulario();
-    expect(categorias).toContain("Nueva Categoría");
-  });
-
-  it("el emoji por defecto es 🎮 y el formulario se limpia tras guardar", () => {
-    entrarComoAdmin();
+  it("el formulario se limpia tras guardar", async () => {
+    await renderAdmin();
     llenarFormulario({ nombre: "Sin Emoji", categoria: "Tests", precio: "500" });
     enviarFormulario();
-    const guardado = JSON.parse(localStorage.getItem("productosTienda")).find((p) => p.nombre === "Sin Emoji");
-    expect(guardado.emoji).toBe("🎮");
+    await screen.findByText("Producto creado correctamente.");
     expect(screen.getByLabelText("Nombre")).toHaveValue("");
     // input[type=number] vacío se reporta como null en jest-dom
     expect(screen.getByLabelText(/Precio/)).toHaveValue(null);
   });
+
+  it("muestra el error del backend si falla la creación", async () => {
+    api.createProduct.mockRejectedValue(new Error("Error HTTP 500"));
+    await renderAdmin();
+    llenarFormulario({ nombre: "Falla", categoria: "Tests", precio: "100" });
+    enviarFormulario();
+    expect(await screen.findByText("Error HTTP 500")).toBeInTheDocument();
+  });
 });
 
 describe("Admin – editar y eliminar", () => {
-  it("editar precarga el formulario y actualiza el producto", () => {
-    entrarComoAdmin();
-    const filaCatan = screen.getByRole("row", { name: /Catan/ });
-    fireEvent.click(within(filaCatan).getByRole("button", { name: "Editar" }));
+  it("editar precarga el formulario y actualiza el producto vía API", async () => {
+    await renderAdmin();
+    fireEvent.click(within(filaCatan()).getByRole("button", { name: "Editar" }));
 
+    expect(screen.getByText("Editar producto")).toBeInTheDocument();
     expect(screen.getByLabelText("Nombre")).toHaveValue("Catan");
     expect(screen.getByLabelText(/Precio/)).toHaveValue(29990); // type=number se compara como número
 
     fireEvent.change(screen.getByLabelText("Nombre"), { target: { value: "Catan Editado" } });
     enviarFormulario("ACTUALIZAR");
 
-    expect(screen.getByRole("cell", { name: /Catan Editado/ })).toBeInTheDocument();
-    expect(productos.find((p) => p.id === 1).nombre).toBe("Catan Editado");
-    expect(JSON.parse(localStorage.getItem("productosTienda")).find((p) => p.id === 1).nombre).toBe("Catan Editado");
+    expect(await screen.findByText("Producto actualizado correctamente.")).toBeInTheDocument();
+    expect(api.updateProduct).toHaveBeenCalledWith(1, expect.objectContaining({ nombre: "Catan Editado", precio: 29990 }));
   });
 
-  it("'Cancelar' sale del modo edición sin guardar cambios", () => {
-    entrarComoAdmin();
-    fireEvent.click(within(screen.getByRole("row", { name: /Catan/ })).getByRole("button", { name: "Editar" }));
+  it("'Cancelar' sale del modo edición sin guardar cambios", async () => {
+    await renderAdmin();
+    fireEvent.click(within(filaCatan()).getByRole("button", { name: "Editar" }));
     fireEvent.change(screen.getByLabelText("Nombre"), { target: { value: "No Debe Guardarse" } });
     fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
     expect(screen.getByLabelText("Nombre")).toHaveValue("");
-    expect(productos.find((p) => p.id === 1).nombre).toBe("Catan");
+    expect(api.updateProduct).not.toHaveBeenCalled();
   });
 
-  it("eliminar quita el producto con confirmación y lo refleja en el catálogo", () => {
+  it("eliminar pide confirmación y borra el producto vía API", async () => {
     vi.spyOn(window, "confirm").mockReturnValue(true);
-    entrarComoAdmin();
-    fireEvent.click(within(screen.getByRole("row", { name: /Catan/ })).getByRole("button", { name: "Eliminar" }));
-    expect(screen.queryByRole("row", { name: /Catan/ })).not.toBeInTheDocument();
-    expect(productos.some((p) => p.id === 1)).toBe(false);
-    expect(JSON.parse(localStorage.getItem("productosTienda")).some((p) => p.id === 1)).toBe(false);
+    await renderAdmin();
+    fireEvent.click(within(filaCatan()).getByRole("button", { name: "Eliminar" }));
+    await waitFor(() => expect(api.deleteProduct).toHaveBeenCalledWith(1));
+    expect(await screen.findByText("Producto eliminado.")).toBeInTheDocument();
   });
 
-  it("cancelar la confirmación conserva el producto", () => {
+  it("cancelar la confirmación conserva el producto", async () => {
     vi.spyOn(window, "confirm").mockReturnValue(false);
-    entrarComoAdmin();
-    fireEvent.click(within(screen.getByRole("row", { name: /Catan/ })).getByRole("button", { name: "Eliminar" }));
-    expect(screen.getByRole("row", { name: /Catan/ })).toBeInTheDocument();
-    expect(productos.some((p) => p.id === 1)).toBe(true);
+    await renderAdmin();
+    fireEvent.click(within(filaCatan()).getByRole("button", { name: "Eliminar" }));
+    expect(api.deleteProduct).not.toHaveBeenCalled();
+    expect(filaCatan()).toBeInTheDocument();
+  });
+
+  it("muestra el error del backend si falla el borrado", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    api.deleteProduct.mockRejectedValue(new Error("Error HTTP 403"));
+    await renderAdmin();
+    fireEvent.click(within(filaCatan()).getByRole("button", { name: "Eliminar" }));
+    expect(await screen.findByText("Error HTTP 403")).toBeInTheDocument();
   });
 });

@@ -1,0 +1,15 @@
+# /etc/systemd/system/levelup-backend.service
+[Unit]
+Description=Level-Up Gamer Backend (Spring Boot)
+After=network.target postgresql.service
+
+[Service]
+User=ec2-user
+WorkingDirectory=/opt/levelup
+EnvironmentFile=/opt/levelup/backend.env
+ExecStart=/usr/bin/java -Xmx384m -jar /opt/levelup/backend.jar
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

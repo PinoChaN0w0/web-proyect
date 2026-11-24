@@ -6,6 +6,8 @@ Object.defineProperty(window, "scrollTo", { value: vi.fn(), writable: true, conf
 
 beforeEach(() => {
   window.scrollTo.mockClear();
+  // jsdom tampoco implementa alert(); lo silenciamos.
+  window.alert = vi.fn();
 });
 
 // Estado limpio entre pruebas: el estado real vive en localStorage/sessionStorage.

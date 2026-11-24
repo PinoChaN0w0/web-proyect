@@ -21,9 +21,12 @@ public class JwtService {
 
     public JwtService(@Value("${app.jwt.secret}") String secret,
                       @Value("${app.jwt.expiration-ms}") long expirationMs) {
-        // Asegura longitud mínima para HS256
-        String padded = secret.length() < 32 ? String.format("%-32s", secret).replace(' ', 'x') : secret;
-        this.key = Keys.hmacShaKeyFor(padded.getBytes(StandardCharsets.UTF_8));
+        if (secret == null || secret.isBlank() || secret.length() < 32) {
+            throw new IllegalStateException(
+                    "JWT_SECRET no configurado o demasiado corto (mínimo 32 caracteres). "
+                    + "Defínelo como variable de entorno, p. ej.: export JWT_SECRET=$(openssl rand -base64 48)");
+        }
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMs = expirationMs;
     }
 

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import ProductImage from "../components/ProductImage.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useNotificaciones } from "../context/NotificationContext.jsx";
 import { formatearPrecio } from "../utils/format.js";
 
 const PORCENTAJE_DESCUENTO_DUOC = 0.2;
@@ -9,13 +10,21 @@ const PORCENTAJE_DESCUENTO_DUOC = 0.2;
 export default function Carrito() {
   const { items, subtotal, sumar, restar, eliminar, vaciar } = useCart();
   const { descuentoActivo } = useAuth();
+  const { notificar, confirmar } = useNotificaciones();
 
   const descuento = descuentoActivo ? Math.round(subtotal * PORCENTAJE_DESCUENTO_DUOC) : 0;
   const total = subtotal - descuento;
   const vacio = items.length === 0;
 
   const handleVaciar = () => {
-    if (window.confirm("¿Estás seguro de vaciar tu carrito?")) vaciar();
+    confirmar(
+      "¿Estás seguro de vaciar tu carrito?",
+      () => {
+        vaciar();
+        notificar("Carrito vaciado.", "info");
+      },
+      { titulo: "Vaciar carrito", textoAceptar: "Vaciar" }
+    );
   };
 
   return (
@@ -74,7 +83,10 @@ export default function Carrito() {
                           ${(p.precio * p.cantidad).toLocaleString("es-CL")}
                         </td>
                         <td className="text-center">
-                          <button type="button" className="btn btn-link text-danger p-0" onClick={() => eliminar(p.id)} aria-label="Eliminar">
+                          <button type="button" className="btn btn-link text-danger p-0" onClick={() => {
+                              eliminar(p.id);
+                              notificar(`${p.nombre} se quitó del carrito.`, "info");
+                            }} aria-label="Eliminar">
                             <i className="fa-solid fa-trash-can fs-5"></i>
                           </button>
                         </td>

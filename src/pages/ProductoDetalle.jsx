@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ProductImage from "../components/ProductImage.jsx";
 import { useCart } from "../context/CartContext.jsx";
+import { useNotificaciones } from "../context/NotificationContext.jsx";
 import { api } from "../api/client.js";
 import { formatearPrecio } from "../utils/format.js";
 
 export default function ProductoDetalle() {
   const { id } = useParams();
   const { agregar } = useCart();
+  const { notificar } = useNotificaciones();
   const [producto, setProducto] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -46,7 +48,10 @@ export default function ProductoDetalle() {
           <p className="text-muted">{producto.descripcion}</p>
           <p className="product-price">{formatearPrecio(producto.precio)}</p>
           <div className="d-flex gap-2">
-            <button type="button" className="btn btn-neon" onClick={() => agregar(producto)}>
+            <button type="button" className="btn btn-neon" onClick={() => {
+              agregar(producto);
+              notificar(`${producto.nombre} fue agregado al carrito.`);
+            }}>
               <i className="fa-solid fa-cart-plus me-1"></i> Agregar al carrito
             </button>
             <Link to="/productos" className="btn btn-outline-light">Volver</Link>

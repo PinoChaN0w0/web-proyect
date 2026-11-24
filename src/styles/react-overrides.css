@@ -6,3 +6,34 @@
   flex-direction: column;
   flex: 1 0 auto;
 }
+
+/* ===== Mensajes propios de la página (toasts + confirmación) ===== */
+.toast-stack {
+  position: fixed; top: 80px; right: 16px; z-index: 2000;
+  display: flex; flex-direction: column; gap: 10px; max-width: min(360px, calc(100vw - 32px));
+}
+.toast-lu {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 14px; border-radius: 10px; color: var(--text-white, #fff);
+  background: var(--bg-dark-card, #121212); border: 1px solid var(--neon-green, #39ff14);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .6); font-family: var(--font-roboto, Arial, sans-serif);
+  animation: toast-in .2s ease-out;
+}
+.toast-lu--error { border-color: #ff4d4d; }
+.toast-lu--info { border-color: var(--primary-blue, #1e90ff); }
+.toast-lu__close { background: none; border: 0; color: var(--text-muted, #a0a0a0); font-size: 1.3rem; line-height: 1; cursor: pointer; }
+.toast-lu__close:hover { color: #fff; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+.confirm-overlay {
+  position: fixed; inset: 0; z-index: 2100; display: flex; align-items: center; justify-content: center;
+  padding: 16px; background: rgba(0, 0, 0, .75);
+}
+.confirm-box {
+  width: 100%; max-width: 420px; padding: 24px; border-radius: 12px;
+  background: var(--bg-dark-card, #121212); border: 1px solid var(--primary-blue, #1e90ff);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .7); color: var(--text-white, #fff);
+}
+.confirm-box h3 { font-family: var(--font-orbitron, sans-serif); font-size: 1.1rem; color: var(--primary-blue, #1e90ff); margin: 0 0 10px; }
+.confirm-box p { margin: 0 0 20px; color: var(--text-white, #fff); }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }

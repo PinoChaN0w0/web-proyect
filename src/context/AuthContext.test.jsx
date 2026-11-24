@@ -1,7 +1,15 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { act, render } from "@testing-library/react";
 import { AuthProvider, useAuth } from "./AuthContext.jsx";
+import { api, setToken } from "../api/client.js";
 import { seedAuth } from "../test/helpers.jsx";
+
+// AuthContext habla con el backend (api.login / api.register) y guarda la sesión en localStorage["auth"].
+vi.mock("../api/client.js", () => ({
+  api: { login: vi.fn(), register: vi.fn() },
+  setToken: vi.fn(),
+  getToken: vi.fn(),
+}));
 
 let ctx = null;
 
@@ -26,150 +34,150 @@ const usuarioNuevo = {
   confirmarPassword: "secreto123",
 };
 
-const hoy = new Date().toISOString().slice(0, 10);
+const respuestaLogin = (extra = {}) => ({
+  token: "jwt",
+  id: 1,
+  nombre: "Nuevo Gamer",
+  email: "user@ejemplo.cl",
+  role: "CLIENTE",
+  descuentoActivo: false,
+  ...extra,
+});
+
+beforeEach(() => {
+  api.login.mockReset();
+  api.register.mockReset();
+  setToken.mockClear();
+  ctx = null;
+});
 
 describe("AuthContext – registrar", () => {
-  it("registra un usuario válido y guarda la lista en 'usuarios'", () => {
+  it("registra un usuario válido enviando el payload normalizado al backend", async () => {
+    api.register.mockResolvedValue({});
     montar();
-    const res = ctx.registrar(usuarioNuevo);
+    let res;
+    await act(async () => {
+      res = await ctx.registrar({ ...usuarioNuevo, nombre: "  Nuevo Gamer ", email: "  NUEVO@EJEMPLO.CL " });
+    });
     expect(res.ok).toBe(true);
-    const guardados = JSON.parse(localStorage.getItem("usuarios"));
-    expect(guardados).toHaveLength(1);
-    expect(guardados[0]).toEqual({
+    expect(api.register).toHaveBeenCalledWith({
       nombre: "Nuevo Gamer",
       fechaNacimiento: "2000-01-01",
       email: "nuevo@ejemplo.cl",
       password: "secreto123",
+      confirmarPassword: "secreto123",
     });
   });
 
-  it("normaliza el correo a minúsculas", () => {
+  it("rechaza campos vacíos sin llamar al backend", async () => {
     montar();
-    ctx.registrar({ ...usuarioNuevo, email: "NUEVO@EJEMPLO.CL" });
-    const guardados = JSON.parse(localStorage.getItem("usuarios"));
-    expect(guardados[0].email).toBe("nuevo@ejemplo.cl");
+    let res;
+    await act(async () => {
+      res = await ctx.registrar({ ...usuarioNuevo, nombre: "  " });
+    });
+    expect(res).toEqual({ ok: false, error: "Error: Todos los campos son obligatorios." });
+    expect(api.register).not.toHaveBeenCalled();
   });
 
-  it("rechaza campos vacíos", () => {
+  it("devuelve el mensaje de error del backend (edad, correo, duplicado, etc.)", async () => {
+    api.register.mockRejectedValue(new Error("Error: Este correo ya está registrado."));
     montar();
-    const res = ctx.registrar({ ...usuarioNuevo, nombre: "  " });
-    expect(res.ok).toBe(false);
-    expect(res.error).toBe("Error: Todos los campos son obligatorios.");
-    expect(localStorage.getItem("usuarios")).toBeNull();
+    let res;
+    await act(async () => {
+      res = await ctx.registrar(usuarioNuevo);
+    });
+    expect(res).toEqual({ ok: false, error: "Error: Este correo ya está registrado." });
   });
 
-  it("rechaza menores de edad", () => {
+  it("usa un mensaje genérico si el error no trae texto", async () => {
+    api.register.mockRejectedValue(new Error(""));
     montar();
-    const res = ctx.registrar({ ...usuarioNuevo, fechaNacimiento: hoy });
-    expect(res.ok).toBe(false);
-    expect(res.error).toBe("Error: Debes ser mayor de 18 años para registrarte.");
-  });
-
-  it("rechaza correo inválido", () => {
-    montar();
-    const res = ctx.registrar({ ...usuarioNuevo, email: "no-es-correo" });
-    expect(res.ok).toBe(false);
-    expect(res.error).toBe("Error: Ingresa un correo electrónico válido.");
-  });
-
-  it("rechaza contraseña menor a 6 caracteres", () => {
-    montar();
-    const res = ctx.registrar({ ...usuarioNuevo, password: "12345", confirmarPassword: "12345" });
-    expect(res.ok).toBe(false);
-    expect(res.error).toBe("Error: La contraseña debe tener al menos 6 caracteres.");
-  });
-
-  it("rechaza contraseñas que no coinciden", () => {
-    montar();
-    const res = ctx.registrar({ ...usuarioNuevo, confirmarPassword: "otra12345" });
-    expect(res.ok).toBe(false);
-    expect(res.error).toBe("Error: Las contraseñas no coinciden.");
-  });
-
-  it("rechaza correo ya registrado (valida duplicados)", () => {
-    montar();
-    ctx.registrar(usuarioNuevo);
-    const res = ctx.registrar(usuarioNuevo);
-    expect(res.ok).toBe(false);
-    expect(res.error).toBe("Error: Este correo ya está registrado.");
-    expect(JSON.parse(localStorage.getItem("usuarios"))).toHaveLength(1);
-  });
-
-  it("rechaza duplicado aunque el correo llegue en mayúsculas", () => {
-    montar();
-    ctx.registrar(usuarioNuevo);
-    const res = ctx.registrar({ ...usuarioNuevo, email: "NUEVO@EJEMPLO.CL" });
-    expect(res.ok).toBe(false);
-    expect(res.error).toBe("Error: Este correo ya está registrado.");
+    let res;
+    await act(async () => {
+      res = await ctx.registrar(usuarioNuevo);
+    });
+    expect(res).toEqual({ ok: false, error: "Error al registrar usuario." });
   });
 });
 
 describe("AuthContext – login", () => {
-  function registrarYLuego(email, password) {
+  it("rechaza correo y contraseña vacíos sin llamar al backend", async () => {
     montar();
     let res;
-    act(() => {
-      ctx.registrar({ ...usuarioNuevo, email, password, confirmarPassword: password });
-      res = ctx.login(email, password);
+    await act(async () => {
+      res = await ctx.login("   ", "");
     });
-    return res;
-  }
+    expect(res).toEqual({ ok: false, error: "Error: Todos los campos son obligatorios." });
+    expect(api.login).not.toHaveBeenCalled();
+  });
 
-  it("rechaza credenciales de usuario no registrado", () => {
+  it("devuelve el error del backend con credenciales inválidas", async () => {
+    api.login.mockRejectedValue(new Error("Error: Correo o contraseña incorrectos."));
     montar();
-    const res = ctx.login("fantasma@ejemplo.cl", "cualquiera");
-    expect(res.ok).toBe(false);
-    expect(res.error).toBe("Error: Correo o contraseña incorrectos.");
+    let res;
+    await act(async () => {
+      res = await ctx.login("fantasma@ejemplo.cl", "cualquiera");
+    });
+    expect(res).toEqual({ ok: false, error: "Error: Correo o contraseña incorrectos." });
+    expect(ctx.estaLogueado).toBe(false);
   });
 
-  it("rechaza correo y contraseña vacíos", () => {
+  it("hace login válido: activa la sesión, guarda token y rol", async () => {
+    api.login.mockResolvedValue(respuestaLogin({ email: "user@ejemplo.cl" }));
     montar();
-    const res = ctx.login("   ", "");
-    expect(res.ok).toBe(false);
-    expect(res.error).toBe("Error: Todos los campos son obligatorios.");
-  });
-
-  it("rechaza contraseña incorrecta", () => {
-    registrarYLuego("user@ejemplo.cl", "clave12345");
-    const res = ctx.login("user@ejemplo.cl", "clave-equivocada");
-    expect(res.ok).toBe(false);
-    expect(res.error).toBe("Error: Correo o contraseña incorrectos.");
-  });
-
-  it("hace login con credenciales válidas y activa la sesión", () => {
-    const res = registrarYLuego("user@ejemplo.cl", "clave12345");
+    let res;
+    await act(async () => {
+      res = await ctx.login("user@ejemplo.cl", "clave12345");
+    });
     expect(res.ok).toBe(true);
     expect(ctx.estaLogueado).toBe(true);
-    expect(ctx.usuario).toEqual({ nombre: "Nuevo Gamer", email: "user@ejemplo.cl" });
+    expect(ctx.usuario).toEqual({ id: 1, nombre: "Nuevo Gamer", email: "user@ejemplo.cl" });
+    expect(ctx.role).toBe("CLIENTE");
+    expect(ctx.esAdmin).toBe(false);
     expect(ctx.descuentoActivo).toBe(false);
+    expect(setToken).toHaveBeenCalledWith("jwt");
   });
 
-  it("escribe todas las claves de sesión en localStorage", () => {
-    registrarYLuego("user@ejemplo.cl", "clave12345");
-    expect(localStorage.getItem("usuarioLogueado")).toBe("true");
-    expect(JSON.parse(localStorage.getItem("usuarioActual")).email).toBe("user@ejemplo.cl");
-    expect(localStorage.getItem("correoUsuario")).toBe("user@ejemplo.cl");
-    expect(localStorage.getItem("descuentoActivo")).toBe("false");
-  });
-
-  it("activa el descuento Duoc con correo @duocuc.cl", () => {
-    registrarYLuego("alumno@duocuc.cl", "clave12345");
-    expect(ctx.descuentoActivo).toBe(true);
-    expect(localStorage.getItem("descuentoActivo")).toBe("true");
-  });
-
-  it("activa el descuento Duoc con correo @duoc.cl", () => {
-    registrarYLuego("profe@duoc.cl", "clave12345");
-    expect(ctx.descuentoActivo).toBe(true);
-  });
-
-  it("normaliza el correo al hacer login (mayúsculas + espacios)", () => {
-    registrarYLuego("user@ejemplo.cl", "clave12345");
-    let res;
-    act(() => {
-      res = ctx.login("  USER@EJEMPLO.CL ", "clave12345");
+  it("escribe la sesión completa en localStorage['auth']", async () => {
+    api.login.mockResolvedValue(respuestaLogin());
+    montar();
+    await act(async () => {
+      await ctx.login("user@ejemplo.cl", "clave12345");
     });
-    expect(res.ok).toBe(true);
+    expect(JSON.parse(localStorage.getItem("auth"))).toEqual({
+      token: "jwt",
+      usuario: { id: 1, nombre: "Nuevo Gamer", email: "user@ejemplo.cl" },
+      role: "CLIENTE",
+      descuentoActivo: false,
+    });
+  });
+
+  it("el rol ADMIN activa esAdmin", async () => {
+    api.login.mockResolvedValue(respuestaLogin({ role: "ADMIN" }));
+    montar();
+    await act(async () => {
+      await ctx.login("admin@levelup.cl", "Admin123!");
+    });
+    expect(ctx.esAdmin).toBe(true);
+    expect(ctx.role).toBe("ADMIN");
+  });
+
+  it("descuentoActivo lo decide el backend (convenio Duoc)", async () => {
+    api.login.mockResolvedValue(respuestaLogin({ email: "alumno@duocuc.cl", descuentoActivo: true }));
+    montar();
+    await act(async () => {
+      await ctx.login("alumno@duocuc.cl", "clave12345");
+    });
+    expect(ctx.descuentoActivo).toBe(true);
+  });
+
+  it("normaliza el correo al hacer login (mayúsculas + espacios)", async () => {
+    api.login.mockResolvedValue(respuestaLogin());
+    montar();
+    await act(async () => {
+      await ctx.login("  USER@EJEMPLO.CL ", "clave12345");
+    });
+    expect(api.login).toHaveBeenCalledWith("user@ejemplo.cl", "clave12345");
   });
 });
 
@@ -186,27 +194,26 @@ describe("AuthContext – sesión y logout", () => {
     montar();
     expect(ctx.estaLogueado).toBe(false);
     expect(ctx.usuario).toBeNull();
+    expect(ctx.role).toBeNull();
     expect(ctx.descuentoActivo).toBe(false);
   });
 
-  it("caso de error: usuarioActual con JSON corrupto no revienta la app", () => {
-    localStorage.setItem("usuarioLogueado", "true");
-    localStorage.setItem("usuarioActual", "{{{{");
+  it("caso de error: 'auth' con JSON corrupto no revienta la app", () => {
+    localStorage.setItem("auth", "{{{{");
     montar();
+    expect(ctx.estaLogueado).toBe(false);
     expect(ctx.usuario).toBeNull();
-    expect(ctx.descuentoActivo).toBe(false);
   });
 
-  it("logout limpia las claves de sesión y desloguea", () => {
+  it("logout limpia la sesión y el token", () => {
     seedAuth({ descuento: true });
     montar();
     expect(ctx.estaLogueado).toBe(true);
     act(() => ctx.logout());
     expect(ctx.estaLogueado).toBe(false);
     expect(ctx.usuario).toBeNull();
-    for (const k of ["usuarioLogueado", "usuarioActual", "correoUsuario", "descuentoActivo"]) {
-      expect(localStorage.getItem(k)).toBeNull();
-    }
+    expect(localStorage.getItem("auth")).toBeNull();
+    expect(setToken).toHaveBeenCalledWith(null);
   });
 
   it("lanza un error claro al usar useAuth fuera del provider", () => {

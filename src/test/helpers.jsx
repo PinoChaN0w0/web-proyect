@@ -8,12 +8,26 @@ export function seedCart(items) {
   localStorage.setItem("carrito", JSON.stringify(items));
 }
 
-/** Sembrar una sesión de usuario en localStorage antes de renderizar. */
-export function seedAuth({ nombre = "Tester", email = "test@ejemplo.cl", descuento = false } = {}) {
-  localStorage.setItem("usuarioLogueado", "true");
-  localStorage.setItem("usuarioActual", JSON.stringify({ nombre, email }));
-  localStorage.setItem("correoUsuario", email);
-  localStorage.setItem("descuentoActivo", String(descuento));
+/**
+ * Sembrar una sesión en localStorage antes de renderizar.
+ * AuthContext guarda la sesión completa bajo la clave "auth".
+ */
+export function seedAuth({
+  nombre = "Tester",
+  email = "test@ejemplo.cl",
+  descuento = false,
+  role = "CLIENTE",
+  token = "token-test",
+} = {}) {
+  localStorage.setItem(
+    "auth",
+    JSON.stringify({
+      token,
+      usuario: { id: 1, nombre, email },
+      role,
+      descuentoActivo: descuento,
+    })
+  );
 }
 
 /**

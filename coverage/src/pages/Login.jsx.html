@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../../base.css" />
     <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../../theme.js"></script>
     <style type='text/css'>
         .coverage-summary .sorter {
             background-image: url(../../sort-arrow-sprite.png);
@@ -19,34 +20,44 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
+        
+        <label class="theme-select quiet">
+            Theme
+            <select id="themeSelect" autocomplete="off">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="legacy">Legacy</option>
+            </select>
+        </label>
+
         <h1><a href="../../index.html">All files</a> / <a href="index.html">src/pages</a> Login.jsx</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>22/22</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>4/4</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
-                <span class="quiet">Functions</span>
                 <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>5/5</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>19/19</span>
+                <span class='fraction'>20/20</span>
             </div>
         
             
@@ -138,39 +149,23 @@
 <a name='L73'></a><a href='#L73'>73</a>
 <a name='L74'></a><a href='#L74'>74</a>
 <a name='L75'></a><a href='#L75'>75</a>
-<a name='L76'></a><a href='#L76'>76</a>
-<a name='L77'></a><a href='#L77'>77</a>
-<a name='L78'></a><a href='#L78'>78</a>
-<a name='L79'></a><a href='#L79'>79</a>
-<a name='L80'></a><a href='#L80'>80</a>
-<a name='L81'></a><a href='#L81'>81</a>
-<a name='L82'></a><a href='#L82'>82</a>
-<a name='L83'></a><a href='#L83'>83</a>
-<a name='L84'></a><a href='#L84'>84</a>
-<a name='L85'></a><a href='#L85'>85</a>
-<a name='L86'></a><a href='#L86'>86</a>
-<a name='L87'></a><a href='#L87'>87</a>
-<a name='L88'></a><a href='#L88'>88</a>
-<a name='L89'></a><a href='#L89'>89</a>
-<a name='L90'></a><a href='#L90'>90</a>
-<a name='L91'></a><a href='#L91'>91</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L76'></a><a href='#L76'>76</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-yes">32x</span>
+<span class="cline-any cline-yes">32x</span>
+<span class="cline-any cline-yes">32x</span>
+<span class="cline-any cline-yes">32x</span>
+<span class="cline-any cline-yes">32x</span>
+<span class="cline-any cline-yes">32x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-yes">32x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -180,7 +175,7 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-yes">32x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -193,9 +188,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -217,7 +210,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -232,42 +224,30 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useEffect, useRef, useState } from "react";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 &nbsp;
 export default function Login() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mensaje, setMensaje] = useState({ texto: "", exito: false });
-  const timer = useRef(null);
+  const [mensaje, setMensaje] = useState("");
+  const [cargando, setCargando] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 &nbsp;
-  useEffect(() =&gt; () =&gt; clearTimeout(timer.current), []);
-&nbsp;
-  const handleSubmit = (e) =&gt; {
+  const handleSubmit = async (e) =&gt; {
     e.preventDefault();
-    setMensaje({ texto: "", exito: false });
-&nbsp;
-    const res = login(email, password);
+    setMensaje("");
+    setCargando(true);
+    const res = await login(email, password);
+    setCargando(false);
     if (!res.ok) {
-      setMensaje({ texto: res.error, exito: false });
+      setMensaje(res.error);
       return;
     }
-    setMensaje({ texto: "¡Inicio de sesión exitoso! Redirigiendo...", exito: true });
-    timer.current = setTimeout(() =&gt; navigate("/"), 2000);
+    setMensaje("Inicio de sesión exitoso. Redirigiendo...");
+    setTimeout(() =&gt; navigate("/"), 1200);
   };
 &nbsp;
   return (
@@ -275,56 +255,42 @@ export default function Login() {
       &lt;div className="row justify-content-center"&gt;
         &lt;div className="col-md-8 col-lg-5"&gt;
           &lt;div className="card p-4 p-md-5"&gt;
-            &lt;h2 className="text-center mb-2" style={{ fontFamily: "var(--font-orbitron)", color: "var(--primary-blue)" }}&gt;
+            &lt;h2 className="text-center mb-4" style={{ fontFamily: "var(--font-orbitron)", color: "var(--primary-blue)" }}&gt;
               INICIAR SESIÓN
             &lt;/h2&gt;
-            &lt;p className="text-center mb-4" style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}&gt;
-              Bienvenido de vuelta a la arena
-            &lt;/p&gt;
 &nbsp;
             &lt;form onSubmit={handleSubmit}&gt;
               &lt;div className="mb-3"&gt;
-                &lt;label htmlFor="email" className="form-label"&gt;Correo Electrónico&lt;/label&gt;
-                &lt;input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  placeholder="ejemplo@duocuc.cl"
-                  value={email}
-                  onChange={(e) =&gt; setEmail(e.target.value)}
-                  required
-                /&gt;
-                &lt;div className="form-text mt-1" style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}&gt;
-                  Usa @duocuc.cl para activar tu descuento
-                &lt;/div&gt;
+                &lt;label htmlFor="correo" className="form-label"&gt;Correo Electrónico&lt;/label&gt;
+                &lt;input type="email" className="form-control" id="correo" placeholder="ejemplo@correo.com" required
+                  value={email} onChange={(e) =&gt; setEmail(e.target.value)} /&gt;
               &lt;/div&gt;
 &nbsp;
               &lt;div className="mb-3"&gt;
                 &lt;label htmlFor="password" className="form-label"&gt;Contraseña&lt;/label&gt;
-                &lt;input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  placeholder="******"
-                  value={password}
-                  onChange={(e) =&gt; setPassword(e.target.value)}
-                  required
-                /&gt;
+                &lt;input type="password" className="form-control" id="password" placeholder="********" required
+                  value={password} onChange={(e) =&gt; setPassword(e.target.value)} /&gt;
               &lt;/div&gt;
 &nbsp;
-              &lt;p className="text-center fw-bold" style={{ color: mensaje.exito ? "#39FF14" : "#ff4d4d" }}&gt;
-                {mensaje.texto}
+              &lt;p
+                id="mensajeLogin"
+                className="text-center mt-3 fw-bold"
+                style={{ color: mensaje.startsWith("Error") ? "#ff4d4d" : "var(--neon-green)" }}
+              &gt;
+                {mensaje}
               &lt;/p&gt;
 &nbsp;
-              &lt;div className="d-grid gap-2 mt-4"&gt;
-                &lt;button type="submit" className="btn btn-neon py-2"&gt;ENTRAR A LA ARENA&lt;/button&gt;
+              &lt;div className="d-grid mt-4"&gt;
+                &lt;button type="submit" className="btn btn-neon py-2" disabled={cargando}&gt;
+                  {cargando ? "INGRESANDO..." : "INGRESAR"}
+                &lt;/button&gt;
               &lt;/div&gt;
 &nbsp;
-              &lt;div className="mt-4 text-center"&gt;
-                &lt;p className="mb-0 text-light"&gt;
-                  ¿No tienes cuenta?{" "}
-                  &lt;Link to="/registro" style={{ color: "var(--primary-blue)", fontWeight: "bold" }}&gt;Regístrate aquí&lt;/Link&gt;
-                &lt;/p&gt;
+              &lt;div className="text-center mt-4"&gt;
+                &lt;p className="mb-0 text-muted"&gt;¿No tienes una cuenta?&lt;/p&gt;
+                &lt;Link to="/registro" style={{ color: "var(--primary-blue)", textDecoration: "none", fontWeight: "bold" }}&gt;
+                  Regístrate aquí
+                &lt;/Link&gt;
               &lt;/div&gt;
             &lt;/form&gt;
           &lt;/div&gt;
@@ -339,8 +305,8 @@ export default function Login() {
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
-                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-10-31T12:51:57.356Z
+                <a href="https://vitest.dev/" target="_blank" rel="noopener noreferrer">Vitest</a>
+                at 2026-11-24T19:34:43.698Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

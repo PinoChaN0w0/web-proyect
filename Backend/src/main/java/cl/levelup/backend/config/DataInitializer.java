@@ -5,6 +5,7 @@ import cl.levelup.backend.model.Role;
 import cl.levelup.backend.model.User;
 import cl.levelup.backend.repository.ProductRepository;
 import cl.levelup.backend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,14 +18,17 @@ import java.util.List;
 public class DataInitializer {
 
     @Bean
-    CommandLineRunner initData(UserRepository users, ProductRepository products, PasswordEncoder encoder) {
+    CommandLineRunner initData(UserRepository users, ProductRepository products, PasswordEncoder encoder,
+                               @Value("${app.admin.email}") String adminEmail,
+                               @Value("${app.admin.password}") String adminPassword) {
         return args -> {
-            // Admin por defecto (cambiar credenciales en despliegue real)
-            if (!users.existsByEmail("admin@levelup.cl")) {
+            // Admin inicial: credenciales por ADMIN_EMAIL / ADMIN_PASSWORD (en producción NO usar los valores por defecto)
+            String email = adminEmail.trim().toLowerCase();
+            if (!users.existsByEmail(email)) {
                 User admin = new User();
                 admin.setNombre("Administrador");
-                admin.setEmail("admin@levelup.cl");
-                admin.setPassword(encoder.encode("Admin123!"));
+                admin.setEmail(email);
+                admin.setPassword(encoder.encode(adminPassword));
                 admin.setFechaNacimiento(LocalDate.of(1990, 1, 1));
                 admin.setRole(Role.ADMIN);
                 users.save(admin);

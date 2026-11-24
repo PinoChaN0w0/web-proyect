@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client.js";
+import { useNotificaciones } from "../context/NotificationContext.jsx";
 
 const vacio = { nombre: "", email: "", password: "", fechaNacimiento: "", role: "CLIENTE" };
 
 export default function AdminUsuarios() {
+  const { confirmar } = useNotificaciones();
   const [usuarios, setUsuarios] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [form, setForm] = useState(vacio);
@@ -69,8 +71,10 @@ export default function AdminUsuarios() {
     setError(""); setMensaje("");
   };
 
-  const handleEliminar = async (u) => {
-    if (!window.confirm(`¿Eliminar al usuario "${u.email}"?`)) return;
+  const handleEliminar = (u) =>
+    confirmar(`¿Eliminar al usuario "${u.email}"?`, () => eliminar(u), { titulo: "Eliminar usuario", textoAceptar: "Eliminar" });
+
+  const eliminar = async (u) => {
     setError(""); setMensaje("");
     try {
       await api.deleteUser(u.id);

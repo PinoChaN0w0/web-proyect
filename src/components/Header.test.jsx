@@ -44,8 +44,11 @@ describe("Header", () => {
   });
 
   it("con sesión pero sin nombre muestra 'Mi cuenta' (caso borde)", () => {
-    seedAuth({ nombre: undefined });
-    localStorage.setItem("usuarioActual", JSON.stringify({ email: "x@y.cl" }));
+    // sesión sin nombre: se escribe directo en "auth" porque seedAuth aplica un nombre por defecto
+    localStorage.setItem(
+      "auth",
+      JSON.stringify({ token: "t", usuario: { email: "x@y.cl" }, role: "CLIENTE", descuentoActivo: false })
+    );
     renderHeader();
     expect(screen.getByRole("button", { name: /mi cuenta/i })).toBeInTheDocument();
   });
@@ -54,7 +57,7 @@ describe("Header", () => {
     seedAuth({ nombre: "Diego" });
     renderHeader();
     fireEvent.click(screen.getByRole("button", { name: /diego/i }));
-    expect(localStorage.getItem("usuarioLogueado")).toBeNull();
+    expect(localStorage.getItem("auth")).toBeNull();
     expect(screen.getByRole("link", { name: /iniciar sesión/i })).toBeInTheDocument();
   });
 
@@ -75,5 +78,18 @@ describe("Header", () => {
   it("marca la ruta activa en el enlace del carrito", () => {
     renderHeader("/carrito");
     expect(screen.getByRole("link", { name: /cart-shopping|0/ })).toHaveClass("active");
+  });
+
+  it("un usuario admin ve los enlaces Admin y Usuarios", () => {
+    seedAuth({ role: "ADMIN" });
+    renderHeader();
+    expect(screen.getByRole("link", { name: "Admin" })).toHaveAttribute("href", "/admin");
+    expect(screen.getByRole("link", { name: "Usuarios" })).toHaveAttribute("href", "/admin/usuarios");
+  });
+
+  it("un cliente no ve los enlaces de administración", () => {
+    seedAuth({ role: "CLIENTE" });
+    renderHeader();
+    expect(screen.queryByRole("link", { name: "Admin" })).not.toBeInTheDocument();
   });
 });

@@ -1,14 +1,16 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
+import { useNotificaciones } from "../context/NotificationContext.jsx";
 import { formatearPrecio } from "../utils/format.js";
 import ProductImage from "./ProductImage.jsx";
 
 export default function ProductCard({ producto, compacto = false }) {
   const { agregar } = useCart();
+  const { notificar } = useNotificaciones();
 
   const handleAgregar = () => {
     agregar(producto);
-    alert(`${producto.nombre} fue agregado al carrito.`);
+    notificar(`${producto.nombre} fue agregado al carrito.`);
   };
 
   return (
